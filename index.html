@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unlock Link</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f4f7f6; }
+        .card { background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 340px; }
+        button { width: 100%; padding: 16px; margin: 10px 0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.2s; }
+        #b1 { background: #007bff; color: white; }
+        #b2 { background: #e0e0e0; color: #999; cursor: not-allowed; }
+        #b2.active { background: #28a745; color: white; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <button id="b1">1. Click here, come back</button>
+        <button id="b2" disabled>2. Continue</button>
+    </div>
+    <script>
+        const p = new URLSearchParams(window.location.search);
+        const m = p.get('m');
+        const t = atob(p.get('t')); 
+        document.getElementById('b1').onclick = () => {
+            window.open(m, '_blank');
+            const b2 = document.getElementById('b2');
+            b2.disabled = false;
+            b2.classList.add('active');
+        };
+        document.getElementById('b2').onclick = () => {
+            if(!document.getElementById('b2').disabled) window.location.href = t;
+        };
+    </script>
+</body>
+</html>
