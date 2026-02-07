@@ -6,12 +6,13 @@
     <title>Secure Network Portal</title>
     <style>
         :root {
-            --bg: #010208;
+            --bg: #02060f;
             --blue: #00d2ff;
             --light-blue: #3a7bd5;
             --purple: #9d50bb;
-            --glass: rgba(255, 255, 255, 0.04);
-            --glass-border: rgba(255, 255, 255, 0.15);
+            /* Lighter, more transparent glass */
+            --glass: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.2);
         }
 
         body {
@@ -28,62 +29,64 @@
             position: absolute; width: 100%; height: 100%;
             overflow: hidden; z-index: -1;
         }
+        /* Lighter, softer background glows */
         .blob {
-            position: absolute; width: 500px; height: 500px;
-            background: radial-gradient(circle, var(--blue), transparent 70%);
-            filter: blur(100px); opacity: 0.3; border-radius: 50%;
+            position: absolute; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.25), transparent 70%);
+            filter: blur(100px); border-radius: 50%;
             animation: move 20s infinite alternate;
         }
         .blob-2 {
-            bottom: -100px; right: -100px; width: 450px; height: 450px;
-            background: radial-gradient(circle, var(--purple), transparent 70%);
-            filter: blur(100px); opacity: 0.25; animation: move 15s infinite alternate-reverse;
+            bottom: -100px; right: -100px; width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(157, 80, 187, 0.2), transparent 70%);
+            filter: blur(100px); animation: move 15s infinite alternate-reverse;
         }
         @keyframes move { from { transform: translate(-50px, -50px); } to { transform: translate(100px, 150px); } }
 
         .glass-card {
             position: relative;
             background: var(--glass);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--glass-border);
             border-radius: 45px;
-            padding: 60px 35px;
+            padding: 50px 35px; /* Slightly reduced padding */
             text-align: center;
             width: 88%; max-width: 360px;
-            min-height: 480px;
-            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            min-height: 440px; /* Lowered length as requested */
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
             overflow: hidden;
             display: flex; flex-direction: column; justify-content: center;
         }
 
-        /* ⚡ DIAGONAL MULTI-LINE SCANNING PATTERN */
+        /* ⚡ SUBTLE DIAGONAL LASERS (Every bit of middle part) */
         .scan-line {
             position: absolute; 
-            top: 0; left: -50%; /* Start offset to cover diagonal */
-            width: 200%; height: 2px; /* Extra width for the rotation */
+            top: 0; left: -70%;
+            width: 250%; height: 1px;
             background: linear-gradient(90deg, transparent, var(--blue), transparent);
-            box-shadow: 0 0 20px var(--blue);
+            box-shadow: 0 0 12px var(--blue);
             z-index: 5; 
-            opacity: 0.6; /* More visible as requested */
-            transform: rotate(45deg); /* Angle for diagonal move */
+            opacity: 0.25; /* More non-visible/subtle */
+            transform: rotate(35deg); 
         }
         
-        .line-1 { animation: diagonalScan 4s linear infinite; }
-        .line-2 { animation: diagonalScan 4s linear infinite 0.4s; opacity: 0.3; }
-        .line-3 { animation: diagonalScan 4s linear infinite 0.8s; opacity: 0.15; }
+        /* Spacing them to cover the whole middle area */
+        .line-1 { animation: diagonalScan 5s linear infinite; }
+        .line-2 { animation: diagonalScan 5s linear infinite 1.5s; opacity: 0.15; }
+        .line-3 { animation: diagonalScan 5s linear infinite 3s; opacity: 0.1; }
 
         @keyframes diagonalScan {
-            0% { transform: translate(-50%, -100%) rotate(45deg); opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { transform: translate(20%, 150%) rotate(45deg); opacity: 0; }
+            0% { transform: translate(-30%, -120%) rotate(35deg); opacity: 0; }
+            20% { opacity: 0.25; }
+            80% { opacity: 0.25; }
+            100% { transform: translate(10%, 250%) rotate(35deg); opacity: 0; }
         }
 
         h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1.2px; }
-        p { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 50px; line-height: 1.6; }
+        p { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 40px; line-height: 1.6; }
 
-        .loader-container { position: relative; width: 110px; height: 110px; margin: 0 auto 45px; display: none; }
+        .loader-container { position: relative; width: 110px; height: 110px; margin: 0 auto 35px; display: none; }
         svg { transform: rotate(-90deg); width: 110px; height: 110px; overflow: visible; }
         circle { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.05); }
         .progress {
@@ -101,30 +104,36 @@
 
         #b1 {
             background: #ffffff; color: #000;
-            box-shadow: 0 15px 35px rgba(255,255,255,0.15);
+            box-shadow: 0 15px 35px rgba(255,255,255,0.1);
         }
 
+        /* SUPER GLASSY CONTINUE BUTTON */
         #b2 {
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255, 255, 255, 0.03);
             color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             cursor: not-allowed;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
         }
 
         #b2.active {
-            background: linear-gradient(135deg, rgba(157, 80, 187, 0.4), rgba(58, 123, 213, 0.4));
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
             color: white;
             cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 20px 40px rgba(157, 80, 187, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.4);
-            animation: pulseGlow 2.5s infinite;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            /* Reflection effect */
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 1px rgba(255, 255, 255, 0.6),
+                0 0 20px rgba(0, 210, 255, 0.2);
+            animation: crystalPulse 3s infinite;
         }
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 15px 30px rgba(157, 80, 187, 0.2); }
-            50% { box-shadow: 0 20px 50px rgba(157, 80, 187, 0.5); }
+
+        @keyframes crystalPulse {
+            0%, 100% { transform: scale(1); border-color: rgba(255, 255, 255, 0.3); }
+            50% { transform: scale(1.01); border-color: rgba(255, 255, 255, 0.6); }
         }
     </style>
 </head>
