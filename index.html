@@ -54,24 +54,18 @@
     }
     @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(15%, 15%); } }
 
-    /* ✨ FUTURISTIC RANDOM LINES */
-    .futuristic-line {
+    /* 🔦 SCANNING LASER LINE */
+    .scanner-line {
       position: absolute;
-      width: 2px;
-      height: 100px;
-      background: linear-gradient(to bottom, rgba(166,240,255,0.2), transparent);
-      opacity: 0.2;
-      animation: flicker 6s infinite alternate;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(to right, transparent, var(--light-blue), transparent);
+      opacity: 0.6;
+      animation: scan 4s infinite linear;
     }
-    .line1 { top: 20%; left: 10%; }
-    .line2 { top: 50%; left: 80%; height: 150px; }
-    .line3 { top: 70%; left: 40%; height: 120px; }
-    .line4 { top: 30%; left: 60%; height: 90px; }
-
-    @keyframes flicker {
-      0% { opacity: 0.1; transform: scaleY(1); }
-      50% { opacity: 0.3; transform: scaleY(1.2); }
-      100% { opacity: 0.1; transform: scaleY(1); }
+    @keyframes scan {
+      0% { top: 0; }
+      100% { top: 100%; }
     }
 
     /* 🏛️ COMPACT GLASS CARD */
@@ -157,4 +151,23 @@
           0 15px 35px rgba(0, 0, 0, 0.5),
           inset 0 2px 0px rgba(255, 255, 255, 1),
           0 0 45px rgba(166, 240, 255, 1),
-          0 0 80px rgba(166, 
+          0 0 80px rgba(166, 240, 255, 0.9);
+        border-color: rgba(166, 240, 255, 1);
+        background: rgba(255, 255, 255, 0.08);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-container">
+    <div class="blob"></div>
+    <div class="flux-line f1"></div>
+    <div class="flux-line f2"></div>
+    <div class="flux-line f3"></div>
+    <div class="scanner-line"></div>
+  </div>
+
+  <div class="glass-card">
+    <div class="content-stack">
+      <h1>System Link</h1>
+      <p id="msg">Verifying security certificates...<br>
