@@ -10,7 +10,7 @@
             --blue: #00d2ff;
             --light-blue: #a6f0ff;
             --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.2);
         }
 
         body {
@@ -29,7 +29,7 @@
         }
         .blob {
             position: absolute; width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.25), transparent 70%);
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.3), transparent 70%);
             filter: blur(80px); border-radius: 50%;
             animation: move 12s infinite alternate;
         }
@@ -52,34 +52,27 @@
             overflow: hidden;
         }
 
-        /* ⚡ THE BEAM (Moving along the edges) */
-        .beam-container {
+        /* 🌠 FALLING STAR LASERS */
+        .laser-container {
+            position: absolute; inset: 0; pointer-events: none; z-index: 1;
+        }
+        .star {
             position: absolute;
-            inset: 0;
-            border-radius: 40px;
-            pointer-events: none;
-            z-index: 1;
+            width: 2px; height: 80px;
+            background: linear-gradient(to bottom, var(--light-blue), transparent);
+            opacity: 0;
+            transform: rotate(35deg);
         }
+        .s1 { top: -100px; left: 20%; animation: fall 4s infinite 0s; }
+        .s2 { top: -100px; left: 50%; animation: fall 4s infinite 1.5s; }
+        .s3 { top: -100px; left: 80%; animation: fall 4s infinite 0.8s; }
+        .s4 { top: -100px; left: 10%; animation: fall 4s infinite 2.5s; }
 
-        .beam-svg {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            fill: none;
-        }
-
-        .beam-path {
-            stroke: var(--light-blue);
-            stroke-width: 3;
-            stroke-linecap: round;
-            stroke-dasharray: 80, 400; /* Beam length */
-            filter: drop-shadow(0 0 8px var(--blue));
-            animation: beamRun 3s linear infinite;
-        }
-
-        @keyframes beamRun {
-            0% { stroke-dashoffset: 480; }
-            100% { stroke-dashoffset: 0; }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(35deg); opacity: 0; }
+            10% { opacity: 0.4; }
+            90% { opacity: 0.4; }
+            100% { transform: translateY(600px) rotate(35deg); opacity: 0; }
         }
 
         .content-stack { position: relative; z-index: 10; width: 100%; }
@@ -87,38 +80,55 @@
         h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1.2px; }
         p { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 35px; line-height: 1.6; }
 
-        .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 30px; display: none; }
-        svg.loader { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
+        /* CIRCLE COUNTDOWN (Restored) */
+        .loader-container { position: relative; width: 110px; height: 110px; margin: 0 auto 35px; display: none; }
+        svg.loader { transform: rotate(-90deg); width: 110px; height: 110px; overflow: visible; }
         circle.loader-bg { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.05); }
         .progress {
             stroke: var(--blue); stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
             transition: stroke-dashoffset 0.1s linear;
             filter: drop-shadow(0 0 12px var(--blue));
+            stroke-width: 7;
+            stroke-linecap: round;
         }
 
         .btn {
-            width: 100%; padding: 20px; border-radius: 20px;
+            width: 100%; padding: 22px; border-radius: 22px;
             border: none; font-size: 15px; font-weight: 700;
-            cursor: pointer; transition: 0.2s ease;
-            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px;
+            cursor: pointer; transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            margin-bottom: 18px; text-transform: uppercase; letter-spacing: 1.5px;
         }
 
         #b1 {
             background: #ffffff; color: #000;
+            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.1);
         }
 
-        /* 🔳 THE PLANE BUTTON (Wiped Clean) */
+        /* 💎 TRANSPARENT GLOWING BUTTON */
         #b2 {
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.2);
+            background: transparent;
+            color: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.1);
             cursor: not-allowed;
         }
 
         #b2.active {
-            background: #ffffff;
-            color: #000;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
             cursor: pointer;
+            border: 1px solid rgba(166, 240, 255, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            /* Light Blue Glow */
+            box-shadow: 
+                0 0 20px rgba(0, 210, 255, 0.4),
+                inset 0 0 10px rgba(0, 210, 255, 0.2);
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            from { box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); }
+            to { box-shadow: 0 0 30px rgba(0, 210, 255, 0.6); }
         }
     </style>
 </head>
@@ -128,10 +138,11 @@
     </div>
 
     <div class="glass-card">
-        <div class="beam-container">
-            <svg class="beam-svg">
-                <rect x="1.5" y="1.5" rx="38.5" ry="38.5" width="calc(100% - 3px)" height="calc(100% - 3px)" class="beam-path" />
-            </svg>
+        <div class="laser-container">
+            <div class="star s1"></div>
+            <div class="star s2"></div>
+            <div class="star s3"></div>
+            <div class="star s4"></div>
         </div>
 
         <div class="content-stack">
