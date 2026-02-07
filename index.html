@@ -3,52 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cloud Portal</title>
+    <title>Secure Portal</title>
     <style>
         :root {
-            /* Your Preferred Color Combination */
-            --glass: rgba(255, 255, 255, 0.04);
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --blue: #00d2ff;
+            --bg: #010409;
+            --blue-glow: #00d2ff;
             --light-blue: #3a7bd5;
-            --purple: #9d50bb;
-            --font: 'Inter', -apple-system, system-ui, sans-serif;
+            --glass: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         body {
             margin: 0; padding: 0;
-            background: #02040a;
-            font-family: var(--font);
+            background: var(--bg);
+            font-family: 'Inter', -apple-system, sans-serif;
             color: white;
             width: 100vw; height: 100vh;
             overflow: hidden;
-            position: relative;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        .wrapper {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%; max-width: 360px;
-            z-index: 10;
+        /* Ambient Pulsing Background */
+        .ambient {
+            position: absolute; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1a2a6c 0%, #010409 70%);
+            z-index: -1;
         }
 
-        /* Ambient Animated Blobs */
-        .blob {
-            position: absolute; width: 450px; height: 450px;
-            background: radial-gradient(circle, var(--blue), transparent 70%);
-            filter: blur(90px); border-radius: 50%; z-index: 1;
-            opacity: 0.3; animation: move 15s infinite alternate;
-            top: -150px; left: -150px;
-        }
-        .blob-2 {
-            bottom: -150px; right: -100px; width: 400px; height: 400px;
-            background: radial-gradient(circle, var(--purple), transparent 70%);
-            filter: blur(90px); opacity: 0.25; animation: move 12s infinite alternate-reverse;
-        }
-        @keyframes move { from { transform: translate(0,0); } to { transform: translate(60px, 80px); } }
-
+        /* Centered Card */
         .glass-card {
+            position: relative;
             background: var(--glass);
             backdrop-filter: blur(40px);
             -webkit-backdrop-filter: blur(40px);
@@ -56,92 +40,101 @@
             border-radius: 40px;
             padding: 50px 30px;
             text-align: center;
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7);
-            position: relative;
-            overflow: hidden;
+            width: 85%; max-width: 340px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            overflow: hidden; /* Clips the scanning line */
         }
 
-        h1 { font-size: 1.7rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1px; }
-        p { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 40px; }
-
-        /* CIRCLE PROGRESS */
-        .loader-container {
-            position: relative; width: 100px; height: 100px; margin: 0 auto 35px; display: none;
+        /* ⚡ THE SCANNING LINE (Moving through the card) */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: -100%; left: 0;
+            width: 100%; height: 80px;
+            background: linear-gradient(to bottom, transparent, rgba(0, 210, 255, 0.15), transparent);
+            border-bottom: 2px solid var(--blue-glow);
+            box-shadow: 0 10px 20px rgba(0, 210, 255, 0.2);
+            animation: scanLine 4s ease-in-out infinite;
+            z-index: 1;
         }
+
+        @keyframes scanLine {
+            0% { top: -20%; }
+            50% { top: 100%; }
+            100% { top: -20%; }
+        }
+
+        h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 10px; color: var(--blue-glow); text-shadow: 0 0 15px rgba(0, 210, 255, 0.3); }
+        p { font-size: 13px; color: rgba(255, 255, 255, 0.4); margin-bottom: 40px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* LOADING RING */
+        .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 35px; display: none; }
         svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
-        circle {
-            fill: none; stroke-width: 6; stroke-linecap: round;
-            stroke: rgba(255,255,255,0.05);
-        }
+        circle { fill: none; stroke-width: 5; stroke: rgba(255,255,255,0.05); }
         .progress {
-            stroke: var(--blue); stroke-dasharray: 251.2; stroke-dashoffset: 251.2;
+            stroke: var(--blue-glow); stroke-dasharray: 251.2; stroke-dashoffset: 251.2;
             transition: stroke-dashoffset 0.1s linear;
-            filter: drop-shadow(0 0 10px var(--blue));
+            filter: drop-shadow(0 0 8px var(--blue-glow));
         }
 
         /* BUTTONS */
         .btn {
-            width: 100%; padding: 22px; border-radius: 24px;
-            border: none; font-size: 14px; font-weight: 700;
-            cursor: pointer; transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px;
+            width: 100%; padding: 20px; border-radius: 20px;
+            border: none; font-size: 14px; font-weight: 800;
+            cursor: pointer; transition: 0.4s;
+            margin-bottom: 15px; letter-spacing: 1px;
+            position: relative; z-index: 2;
         }
 
         #b1 {
-            background: #ffffff; color: #000;
-            box-shadow: 0 10px 30px rgba(255,255,255,0.1);
+            background: white; color: black;
+            box-shadow: 0 10px 25px rgba(255,255,255,0.1);
         }
 
-        /* THE GLASSY CONTINUE BUTTON */
+        /* HYPER-GLASS CONTINUE BUTTON */
         #b2 {
             background: rgba(255, 255, 255, 0.02);
-            color: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(0, 210, 255, 0.2);
+            border: 1px solid rgba(0, 210, 255, 0.1);
             cursor: not-allowed;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(5px);
         }
 
         #b2.active {
-            /* Deep Glassy Purple with Inner Shine */
-            background: linear-gradient(135deg, rgba(157, 80, 187, 0.4), rgba(58, 123, 213, 0.4));
+            background: linear-gradient(135deg, rgba(0, 210, 255, 0.2), rgba(58, 123, 213, 0.3));
             color: white;
             cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--blue-glow);
             box-shadow: 
-                0 15px 35px rgba(157, 80, 187, 0.3),
-                inset 0 1px 1px rgba(255, 255, 255, 0.4),
-                inset 0 -1px 20px rgba(0, 0, 0, 0.2);
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+                0 15px 40px rgba(0, 210, 255, 0.4),
+                inset 0 0 15px rgba(0, 210, 255, 0.3);
+            backdrop-filter: blur(20px);
+            animation: pulseGlow 2s infinite;
         }
-        
-        #b2.active:hover {
-            transform: translateY(-3px) scale(1.02);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 20px 40px rgba(157, 80, 187, 0.5);
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 20px rgba(0, 210, 255, 0.3), inset 0 0 10px rgba(0, 210, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(0, 210, 255, 0.6), inset 0 0 20px rgba(0, 210, 255, 0.4); }
+            100% { box-shadow: 0 0 20px rgba(0, 210, 255, 0.3), inset 0 0 10px rgba(0, 210, 255, 0.2); }
         }
     </style>
 </head>
 <body>
-    <div class="blob"></div>
-    <div class="blob-2"></div>
+    <div class="ambient"></div>
 
-    <div class="wrapper">
-        <div class="glass-card">
-            <h1>Link Ready</h1>
-            <p id="msg">Verify your session to access the destination</p>
+    <div class="glass-card">
+        <h1>SECURE ACCESS</h1>
+        <p id="msg">Verifying protocol...</p>
 
-            <div class="loader-container" id="lBox">
-                <svg viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40"></circle>
-                    <circle cx="50" cy="50" r="40" class="progress" id="dot"></circle>
-                </svg>
-            </div>
-
-            <button id="b1" class="btn">Verify Identity</button>
-            <button id="b2" class="btn" disabled>Continue</button>
+        <div class="loader-container" id="lBox">
+            <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40"></circle>
+                <circle cx="50" cy="50" r="40" class="progress" id="dot"></circle>
+            </svg>
         </div>
+
+        <button id="b1" class="btn">Start Connection</button>
+        <button id="b2" class="btn" disabled>Proceed to Link</button>
     </div>
 
     <script>
@@ -159,7 +152,7 @@
             window.open(m, '_blank');
             b1.style.display = 'none';
             lBox.style.display = 'block';
-            msg.innerText = "Processing security layers...";
+            msg.innerText = "Bypassing firewall...";
 
             let time = 0;
             const limit = 4000;
@@ -175,7 +168,7 @@
                     lBox.style.display = 'none';
                     b2.disabled = false;
                     b2.classList.add('active');
-                    msg.innerText = "Verified Successfully ✅";
+                    msg.innerText = "System verified ✅";
                 }
             }, 50);
         };
