@@ -2,100 +2,117 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Access</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Secure Portal</title>
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.12);
             --blue: #00f2fe;
             --purple: #4facfe;
             --font: 'Inter', -apple-system, system-ui, sans-serif;
         }
 
+        /* Full-screen background setup */
         body {
             margin: 0; padding: 0;
-            background: #02040a;
+            background: #010208;
             font-family: var(--font);
-            display: flex; align-items: center; justify-content: center;
-            height: 100vh; color: white; overflow: hidden;
+            color: white;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
         }
 
-        /* Moving colorful blobs for the glass to blur over */
+        /* Centering Layer: This locks the card to the dead-center */
+        .wrapper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 360px;
+            z-index: 10;
+        }
+
+        /* Dynamic Background Blobs */
         .blob {
-            position: absolute; width: 300px; height: 300px;
-            background: linear-gradient(135deg, var(--blue), #a29bfe);
-            filter: blur(80px); border-radius: 50%; z-index: -1;
-            animation: move 10s infinite alternate;
+            position: absolute; width: 350px; height: 350px;
+            background: linear-gradient(135deg, var(--blue), #6c5ce7);
+            filter: blur(90px); border-radius: 50%; z-index: 1;
+            opacity: 0.4;
+            animation: move 12s infinite alternate;
         }
         .blob-2 {
-            bottom: 10%; right: 10%; width: 250px; height: 250px;
-            background: linear-gradient(135deg, #667eea, var(--purple));
-            animation: move 8s infinite alternate-reverse;
+            bottom: -50px; right: -50px; width: 300px; height: 300px;
+            background: linear-gradient(135deg, #a29bfe, var(--purple));
+            filter: blur(90px); opacity: 0.3;
+            animation: move 10s infinite alternate-reverse;
         }
-        @keyframes move { from { transform: translate(0,0); } to { transform: translate(50px, 100px); } }
+        @keyframes move { from { transform: translate(0,0); } to { transform: translate(40px, 60px); } }
 
-        /* The Main Glass Card */
+        /* The Centered Glass Card */
         .glass-card {
             background: var(--glass);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--glass-border);
-            border-radius: 40px; /* Highly rounded aesthetic */
-            padding: 40px;
-            width: 85%; max-width: 340px;
+            border-radius: 45px;
+            padding: 45px 30px;
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
         }
 
         .icon-circle {
-            width: 60px; height: 60px;
-            background: var(--glass);
+            width: 65px; height: 65px;
+            background: rgba(255,255,255,0.03);
             border: 1px solid var(--glass-border);
-            border-radius: 20px; margin: 0 auto 25px;
+            border-radius: 22px; margin: 0 auto 25px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 24px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            font-size: 26px;
         }
 
-        h1 { font-size: 1.5rem; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.5px; }
-        p { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 35px; line-height: 1.5; }
+        h1 { font-size: 1.6rem; font-weight: 800; margin: 0 0 12px; letter-spacing: -0.8px; }
+        p { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 40px; line-height: 1.6; }
 
-        /* Progress Ring Loader */
+        /* Circular Progress Ring */
         .loader-container {
-            position: relative; width: 80px; height: 80px; margin: 0 auto 30px; display: none;
+            position: relative; width: 85px; height: 85px; margin: 0 auto 35px; display: none;
         }
-        svg { transform: rotate(-90deg); width: 80px; height: 80px; }
+        svg { transform: rotate(-90deg); width: 85px; height: 85px; }
         circle {
-            fill: none; stroke-width: 6; stroke-linecap: round;
-            stroke: var(--glass-border);
+            fill: none; stroke-width: 7; stroke-linecap: round;
+            stroke: rgba(255,255,255,0.05);
         }
         .progress {
-            stroke: var(--blue); stroke-dasharray: 226; stroke-dashoffset: 226;
+            stroke: var(--blue); stroke-dasharray: 238; stroke-dashoffset: 238;
             transition: stroke-dashoffset 0.1s linear;
+            filter: drop-shadow(0 0 8px var(--blue));
         }
 
-        /* Pill-Shaped Buttons */
+        /* Pill Buttons */
         .btn {
-            width: 100%; padding: 18px; border-radius: 50px; /* Rounded pill shape */
-            border: none; font-size: 15px; font-weight: 600;
-            cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-bottom: 15px;
+            width: 100%; padding: 20px; border-radius: 50px;
+            border: none; font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;
         }
 
         #b1 {
-            background: white; color: #000;
-            box-shadow: 0 10px 20px rgba(255,255,255,0.1);
+            background: #ffffff; color: #000;
+            box-shadow: 0 15px 30px rgba(255,255,255,0.15);
         }
-        #b1:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(255,255,255,0.2); }
+        #b1:active { transform: scale(0.95); }
 
         #b2 {
-            background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.25);
             border: 1px solid var(--glass-border); cursor: not-allowed;
         }
         #b2.active {
             background: linear-gradient(135deg, var(--blue), var(--purple));
             color: white; cursor: pointer; border: none;
-            box-shadow: 0 10px 20px rgba(0, 242, 254, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 242, 254, 0.4);
         }
     </style>
 </head>
@@ -103,20 +120,22 @@
     <div class="blob"></div>
     <div class="blob-2"></div>
 
-    <div class="glass-card">
-        <div class="icon-circle">🔒</div>
-        <h1>Portal Access</h1>
-        <p id="msg">Verify your connection to unlock the destination</p>
+    <div class="wrapper">
+        <div class="glass-card">
+            <div class="icon-circle">💎</div>
+            <h1>Secure Access</h1>
+            <p id="msg">Verify your session to unlock the premium content</p>
 
-        <div class="loader-container" id="lBox">
-            <svg>
-                <circle cx="40" cy="40" r="36"></circle>
-                <circle cx="40" cy="40" r="36" class="progress" id="dot"></circle>
-            </svg>
+            <div class="loader-container" id="lBox">
+                <svg>
+                    <circle cx="42.5" cy="42.5" r="38"></circle>
+                    <circle cx="42.5" cy="42.5" r="38" class="progress" id="dot"></circle>
+                </svg>
+            </div>
+
+            <button id="b1" class="btn">Start Verification</button>
+            <button id="b2" class="btn" disabled>Continue</button>
         </div>
-
-        <button id="b1" class="btn">Begin Verification</button>
-        <button id="b2" class="btn" disabled>Continue</button>
     </div>
 
     <script>
@@ -134,11 +153,11 @@
             window.open(m, '_blank');
             b1.style.display = 'none';
             lBox.style.display = 'block';
-            msg.innerText = "Processing security layers...";
+            msg.innerText = "Verifying link integrity...";
 
             let time = 0;
             const limit = 4000;
-            const dash = 226;
+            const dash = 238;
 
             const timer = setInterval(() => {
                 time += 50;
@@ -150,7 +169,7 @@
                     lBox.style.display = 'none';
                     b2.disabled = false;
                     b2.classList.add('active');
-                    msg.innerText = "Access Granted ✅";
+                    msg.innerText = "Identity Verified ✅";
                 }
             }, 50);
         };
