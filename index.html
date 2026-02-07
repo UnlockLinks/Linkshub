@@ -6,109 +6,114 @@
     <title>Secure Network Portal</title>
     <style>
         :root {
-            --bg-deep: #000814;
+            --bg-bright-blue: #0033ff;
             --electric-blue: #00d2ff;
-            --deep-blue: #0045ff;
-            --royal-blue: #001dff;
-            --glass: rgba(0, 20, 50, 0.25);
-            --glass-border: rgba(0, 210, 255, 0.4);
+            --deep-blue: #001a3d;
+            --glass: rgba(0, 50, 150, 0.15); /* Tinted glass for more blue vibe */
+            --glass-border: rgba(0, 210, 255, 0.5);
         }
 
-        html, body {
+        html {
+            background-color: #001a3d;
+        }
+
+        body {
             margin: 0; padding: 0;
-            width: 100vw; height: 100vh;
-            background-color: #000814;
+            /* UPDATED: Much brighter, multi-layered blue gradient */
+            background: linear-gradient(135deg, #001a3d 0%, #0045ff 50%, #00d2ff 100%);
             font-family: 'Inter', -apple-system, sans-serif;
             color: white;
+            width: 100vw; height: 100vh;
             overflow: hidden;
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* 🌌 VIBRANT BLUE MESH BACKGROUND */
         .ambient-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            background: 
-                radial-gradient(circle at 20% 20%, rgba(0, 210, 255, 0.4) 0%, transparent 40%),
-                radial-gradient(circle at 80% 80%, rgba(0, 69, 255, 0.4) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(0, 10, 30, 1) 0%, #000814 100%);
+            position: absolute; width: 100%; height: 100%;
+            overflow: hidden; z-index: -1;
         }
 
+        /* BRIGHTER GLOWS: Increased opacity and size */
         .glow-sphere {
-            position: absolute;
-            width: 120%; height: 120%;
-            top: -10%; left: -10%;
-            background: radial-gradient(circle at center, rgba(0, 163, 255, 0.15) 0%, transparent 50%);
-            animation: pulse 8s infinite alternate ease-in-out;
+            position: absolute; 
+            width: 1000px; height: 1000px; 
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.5) 0%, rgba(0, 69, 255, 0.2) 50%, transparent 70%);
+            filter: blur(60px); border-radius: 50%;
+            top: -20%; left: -20%;
+            animation: drift 15s infinite alternate ease-in-out;
+            pointer-events: none;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.5; }
-            100% { transform: scale(1.1); opacity: 0.8; }
+        .glow-sphere-2 {
+            position: absolute; 
+            width: 800px; height: 800px; 
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.4) 0%, transparent 60%);
+            filter: blur(80px); border-radius: 50%;
+            bottom: -15%; right: -15%;
+            animation: drift-reverse 18s infinite alternate ease-in-out;
+            pointer-events: none;
         }
 
-        /* 🏛️ ENHANCED BLUE GLASS CARD */
+        @keyframes drift { 
+            from { transform: translate(0, 0); } 
+            to { transform: translate(15%, 15%); } 
+        }
+
+        @keyframes drift-reverse { 
+            from { transform: translate(0, 0); } 
+            to { transform: translate(-15%, -15%); } 
+        }
+
         .glass-card {
             position: relative;
             background: var(--glass);
-            backdrop-filter: blur(40px) saturate(150%);
-            -webkit-backdrop-filter: blur(40px) saturate(150%);
+            backdrop-filter: blur(25px) saturate(150%); /* Added saturation to pull more blue through */
+            -webkit-backdrop-filter: blur(25px) saturate(150%);
             border: 1px solid var(--glass-border);
             border-radius: 40px;
             padding: 45px 30px;
             text-align: center;
             width: 82%; max-width: 340px;
             min-height: 380px;
-            /* Blue glow around the card */
-            box-shadow: 0 0 60px rgba(0, 210, 255, 0.2), 0 40px 100px rgba(0, 0, 0, 0.5);
+            /* Glow effect around the card */
+            box-shadow: 0 0 50px rgba(0, 210, 255, 0.3), 0 40px 100px rgba(0, 0, 0, 0.4);
             display: flex; flex-direction: column; justify-content: center;
         }
 
         .content-stack { position: relative; z-index: 10; width: 100%; }
 
-        h1 { 
-            font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; 
-            background: linear-gradient(to bottom, #fff, var(--electric-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        p { font-size: 14px; color: rgba(180, 230, 255, 0.8); margin-bottom: 35px; line-height: 1.6; }
+        h1 { font-size: 1.8rem; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.5px; text-shadow: 0 0 15px rgba(0, 210, 255, 0.5); }
+        p { font-size: 14px; color: rgba(255, 255, 255, 0.8); margin-bottom: 35px; line-height: 1.6; }
 
         .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 30px; display: none; }
         svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
-        circle { fill: none; stroke-width: 8; stroke: rgba(0, 210, 255, 0.1); }
+        circle { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.1); }
         .progress {
-            stroke: var(--electric-blue); 
-            stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
-            stroke-linecap: round;
-            filter: drop-shadow(0 0 8px var(--electric-blue)); /* Glowing loader line */
+            stroke: var(--electric-blue); stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
+            transition: stroke-dashoffset 0.1s linear;
+            filter: drop-shadow(0 0 5px var(--electric-blue)); /* Glowing loader */
         }
 
         .btn {
             width: 100%; padding: 20px; border-radius: 18px;
-            border: none; font-size: 14px; font-weight: 800;
-            cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px;
+            border: none; font-size: 14px; font-weight: 700;
+            cursor: pointer; transition: 0.3s ease;
+            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;
         }
 
-        #b1 { 
-            background: var(--electric-blue); 
-            color: #000;
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
-        }
-        #b1:hover { transform: scale(1.02); box-shadow: 0 0 30px rgba(0, 210, 255, 0.6); }
+        #b1 { background: #ffffff; color: #000; box-shadow: 0 5px 20px rgba(0, 210, 255, 0.3); }
+        #b1:hover { background: var(--electric-blue); color: #fff; transform: translateY(-2px); }
 
         #b2 {
-            background: rgba(0, 210, 255, 0.05);
-            color: rgba(0, 210, 255, 0.2);
-            border: 1px solid rgba(0, 210, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             cursor: not-allowed;
         }
 
         #b2.active {
             background: #ffffff;
-            color: #000;
+            color: #000000;
             cursor: pointer;
             border: none;
             box-shadow: 0 10px 30px rgba(0, 210, 255, 0.4);
@@ -118,6 +123,7 @@
 <body>
     <div class="ambient-container">
         <div class="glow-sphere"></div>
+        <div class="glow-sphere-2"></div> 
     </div>
 
     <div class="glass-card">
@@ -132,7 +138,7 @@
                 </svg>
             </div>
 
-            <button id="b1" class="btn">Start Verification</button>
+            <button id="b1" class="btn">Start</button>
             <button id="b2" class="btn" disabled>Continue</button>
         </div>
     </div>
