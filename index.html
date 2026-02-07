@@ -6,12 +6,11 @@
     <title>Secure Network Portal</title>
     <style>
         :root {
-            --bg: #050b1a;
+            --bg: #040a1d;
             --blue: #00d2ff;
-            --light-blue: #80e8ff;
-            /* Lightening the glass significantly */
-            --glass: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.3);
+            --light-blue: #a6f0ff;
+            --glass: rgba(255, 255, 255, 0.09);
+            --glass-border: rgba(255, 255, 255, 0.35);
         }
 
         body {
@@ -24,140 +23,122 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* VIBRANT LIGHT BLUE BACKGROUND */
+        /* 🌌 VIBRANT BACKGROUND */
         .ambient-container {
             position: absolute; width: 100%; height: 100%;
             overflow: hidden; z-index: -1;
         }
         .blob {
-            position: absolute; width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.4) 0%, transparent 70%);
+            position: absolute; width: 550px; height: 550px;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.35), transparent 70%);
             filter: blur(80px); border-radius: 50%;
-            animation: move 12s infinite alternate;
-            top: -5%; left: -5%;
+            animation: move 10s infinite alternate;
         }
-        .blob-2 {
-            bottom: -5%; right: -5%; width: 500px; height: 500px;
-            background: radial-gradient(circle, rgba(128, 232, 255, 0.25) 0%, transparent 70%);
-            filter: blur(80px); animation: move 10s infinite alternate-reverse;
-        }
-        @keyframes move { from { transform: translate(0, 0); } to { transform: translate(80px, 40px); } }
+        @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(15%, 15%); } }
 
+        /* 🏛️ SHORTENED GLASS CARD */
         .glass-card {
             position: relative;
             background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--glass-border);
-            border-radius: 45px;
-            padding: 50px 35px;
+            border-radius: 40px;
+            padding: 40px 30px; /* Reduced padding for shorter look */
             text-align: center;
-            width: 88%; max-width: 360px;
-            min-height: 410px; /* Tightened length */
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            width: 82%; max-width: 340px;
+            min-height: 380px; /* Shortened middle part */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
             overflow: hidden;
             display: flex; flex-direction: column; justify-content: center;
         }
 
-        /* ⚡ UNDER-LAYER LASERS (Moves behind everything) */
+        /* ⚡ SINGLE FAST SCANNER (Behind text/buttons) */
         .laser-wrap {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
-            z-index: 0; /* Layered at the bottom */
+            z-index: 1; /* Under the content stack */
         }
         .scan-line {
             position: absolute;
-            width: 250%; height: 2px;
+            width: 250%; height: 3px;
             background: linear-gradient(90deg, transparent, var(--light-blue), transparent);
-            transform: rotate(-30deg);
+            transform: rotate(-25deg);
             left: -75%;
-            opacity: 0; /* Start hidden to prevent glitch */
-        }
-        .l1 { animation: sweep 5s linear infinite 0.5s; }
-        .l2 { animation: sweep 5s linear infinite 2.2s; }
-        .l3 { animation: sweep 5s linear infinite 3.9s; }
-
-        @keyframes sweep {
-            0% { top: -30%; opacity: 0; }
-            15% { opacity: 0.25; }
-            85% { opacity: 0.25; }
-            100% { top: 130%; opacity: 0; }
+            opacity: 0;
+            animation: fastScan 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite 0.5s;
         }
 
-        /* Content forced to top to stay above lasers */
-        .content-stack { position: relative; z-index: 2; width: 100%; }
+        @keyframes fastScan {
+            0% { top: -40%; opacity: 0; }
+            20% { opacity: 0.4; }
+            80% { opacity: 0.4; }
+            100% { top: 140%; opacity: 0; }
+        }
 
-        h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1.2px; color: #fff; }
-        p { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 40px; line-height: 1.6; }
+        /* CONTENT LAYERED ON TOP */
+        .content-stack { position: relative; z-index: 5; width: 100%; }
 
-        .loader-container { position: relative; width: 110px; height: 110px; margin: 0 auto 35px; display: none; }
-        svg { transform: rotate(-90deg); width: 110px; height: 110px; overflow: visible; }
+        h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1.2px; }
+        p { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 35px; line-height: 1.6; }
+
+        .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 30px; display: none; }
+        svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
         circle { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.05); }
         .progress {
             stroke: var(--blue); stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
             transition: stroke-dashoffset 0.1s linear;
-            filter: drop-shadow(0 0 12px var(--blue));
+            filter: drop-shadow(0 0 10px var(--blue));
         }
 
         .btn {
-            width: 100%; padding: 22px; border-radius: 22px;
+            width: 100%; padding: 20px; border-radius: 20px;
             border: none; font-size: 15px; font-weight: 700;
             cursor: pointer; transition: 0.3s ease;
-            margin-bottom: 18px; text-transform: uppercase; letter-spacing: 1.5px;
-            position: relative;
+            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px;
         }
 
         #b1 {
             background: #ffffff; color: #000;
-            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.2);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15);
         }
 
-        /* 🔥 HYPER-GLASS BLUE GLOW BUTTON */
+        /* 💎 ULTRA-GLASSY PULSE BUTTON */
         #b2 {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.02);
             color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             cursor: not-allowed;
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(10px);
         }
 
         #b2.active {
-            background: rgba(0, 210, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
             color: #fff;
             cursor: pointer;
-            border: 1.5px solid rgba(128, 232, 255, 0.6);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            /* Reflection + Blue Pulse */
+            border: 1.5px solid rgba(166, 240, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             box-shadow: 
-                0 15px 35px rgba(0, 0, 0, 0.4),
-                inset 0 1px 2px rgba(255, 255, 255, 0.7);
-            animation: blueGlassGlow 2.5s infinite ease-in-out;
+                0 15px 35px rgba(0, 0, 0, 0.3),
+                inset 0 1px 3px rgba(255, 255, 255, 0.8);
+            animation: blueGlowPulse 2s infinite ease-in-out;
         }
 
-        @keyframes blueGlassGlow {
-            0%, 100% { 
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.7), 0 0 5px rgba(0, 210, 255, 0.2);
-                border-color: rgba(128, 232, 255, 0.4);
-            }
-            50% { 
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.9), 0 0 20px rgba(0, 210, 255, 0.6);
-                border-color: rgba(128, 232, 255, 1);
-            }
+        @keyframes blueGlowPulse {
+            0%, 100% { box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 5px rgba(0, 210, 255, 0.2); border-color: rgba(166, 240, 255, 0.4); }
+            50% { box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 210, 255, 0.5); border-color: rgba(166, 240, 255, 1); }
         }
     </style>
 </head>
 <body>
     <div class="ambient-container">
         <div class="blob"></div>
-        <div class="blob-2"></div>
     </div>
 
     <div class="glass-card">
         <div class="laser-wrap">
-            <div class="scan-line l1"></div>
-            <div class="scan-line l2"></div>
-            <div class="scan-line l3"></div>
+            <div class="scan-line"></div>
         </div>
         
         <div class="content-stack">
