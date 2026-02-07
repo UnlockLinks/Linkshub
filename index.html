@@ -6,8 +6,9 @@
     <title>Secure Network Portal</title>
     <style>
         :root {
-            --bg: #02050e;
+            --bg: #010a1a;
             --blue: #00d2ff;
+            --deep-blue: #0045ff;
             --glass: rgba(255, 255, 255, 0.07);
             --glass-border: rgba(255, 255, 255, 0.25);
         }
@@ -22,18 +23,29 @@
             display: flex; align-items: center; justify-content: center;
         }
 
+        /* 🌌 ENHANCED BLUE ATMOSPHERE */
         .ambient-container {
             position: absolute; width: 100%; height: 100%;
             overflow: hidden; z-index: -1;
         }
         .blob {
-            position: absolute; width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.3), transparent 70%);
-            filter: blur(80px); border-radius: 50%;
-            animation: move 12s infinite alternate;
+            position: absolute; width: 700px; height: 700px;
+            background: radial-gradient(circle, var(--deep-blue), var(--blue), transparent 75%);
+            filter: blur(100px); border-radius: 50%;
+            opacity: 0.5;
+            animation: move 10s infinite alternate ease-in-out;
         }
-        @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(15%, 15%); } }
+        .blob-2 {
+            position: absolute; width: 500px; height: 500px;
+            background: radial-gradient(circle, var(--blue), transparent 70%);
+            filter: blur(80px); border-radius: 50%;
+            bottom: -10%; right: -10%;
+            opacity: 0.3;
+            animation: move 14s infinite alternate-reverse ease-in-out;
+        }
+        @keyframes move { from { transform: translate(-15%, -15%); } to { transform: translate(20%, 20%); } }
 
+        /* 🏛️ COMPACT GLASS CARD */
         .glass-card {
             position: relative;
             background: var(--glass);
@@ -45,14 +57,14 @@
             text-align: center;
             width: 82%; max-width: 340px;
             min-height: 380px;
-            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
             display: flex; flex-direction: column; justify-content: center;
         }
 
         .content-stack { position: relative; z-index: 10; width: 100%; }
 
-        h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1.2px; }
-        p { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 35px; line-height: 1.6; }
+        h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1px; }
+        p { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 35px; line-height: 1.6; }
 
         .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 30px; display: none; }
         svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
@@ -65,13 +77,13 @@
         .btn {
             width: 100%; padding: 20px; border-radius: 20px;
             border: none; font-size: 15px; font-weight: 700;
-            cursor: pointer; transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            cursor: pointer; transition: 0.3s ease;
             margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px;
         }
 
         #b1 { background: #ffffff; color: #000; }
 
-        /* 💎 PLAIN WHITE BUTTON WITH GLOW */
+        /* 💎 PLAIN WHITE BUTTON (NO GLOW) */
         #b2 {
             background: rgba(255, 255, 255, 0.05);
             color: rgba(255, 255, 255, 0.1);
@@ -80,28 +92,24 @@
         }
 
         #b2.active {
-            background: #ffffff; /* Plain white background */
-            color: #000000;    /* Black text */
+            background: #ffffff;
+            color: #000000;
             cursor: pointer;
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.6); /* Clean white glow */
-            animation: whitePulse 2s infinite alternate;
-        }
-
-        @keyframes whitePulse {
-            from { box-shadow: 0 0 15px rgba(255, 255, 255, 0.4); }
-            to { box-shadow: 0 0 35px rgba(255, 255, 255, 0.8); }
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Standard shadow for depth only */
         }
     </style>
 </head>
 <body>
     <div class="ambient-container">
         <div class="blob"></div>
+        <div class="blob-2"></div>
     </div>
 
     <div class="glass-card">
         <div class="content-stack">
-            <h1>System Link</h1>
-            <p id="msg">Verifying security certificates...<br>Link unlocks in 4 seconds.</p>
+            <h1>Identity Link</h1>
+            <p id="msg">Verifying network protocols...<br>Link ready in 4 seconds.</p>
 
             <div class="loader-container" id="lBox">
                 <svg viewBox="0 0 100 100">
@@ -110,8 +118,8 @@
                 </svg>
             </div>
 
-            <button id="b1" class="btn">Initiate Verify</button>
-            <button id="b2" class="btn" disabled>Continue Access</button>
+            <button id="b1" class="btn">Start Verify</button>
+            <button id="b2" class="btn" disabled>Continue</button>
         </div>
     </div>
 
@@ -130,7 +138,7 @@
             if(m) window.open(m, '_blank');
             b1.style.display = 'none';
             lBox.style.display = 'block';
-            msg.innerHTML = "Processing neural handshake...<br>Please wait.";
+            msg.innerHTML = "Authenticating session...<br>Please wait.";
 
             let time = 0;
             const limit = 4000;
@@ -146,7 +154,7 @@
                     lBox.style.display = 'none';
                     b2.disabled = false;
                     b2.classList.add('active');
-                    msg.innerHTML = "Session Authorized ✅";
+                    msg.innerHTML = "Verification Successful ✅";
                 }
             }, 50);
         };
