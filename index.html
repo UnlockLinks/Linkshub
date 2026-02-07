@@ -3,136 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neural Link Setup</title>
+    <title>Portal Access</title>
     <style>
         :root {
-            --bg: #020617;
-            --primary: #00d2ff;
-            --secondary: #9d50bb;
-            --text: #e2e8f0;
-            --neon-glow: 0 0 15px rgba(0, 210, 255, 0.5);
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --blue: #00f2fe;
+            --purple: #4facfe;
+            --font: 'Inter', -apple-system, system-ui, sans-serif;
         }
 
         body {
             margin: 0; padding: 0;
-            background-color: var(--bg);
-            /* Hexagonal Grid Design using CSS patterns */
-            background-image: 
-                linear-gradient(30deg, #0f172a 12%, transparent 12.5%, transparent 87%, #0f172a 87.5%, #0f172a),
-                linear-gradient(150deg, #0f172a 12%, transparent 12.5%, transparent 87%, #0f172a 87.5%, #0f172a),
-                linear-gradient(30deg, #0f172a 12%, transparent 12.5%, transparent 87%, #0f172a 87.5%, #0f172a),
-                linear-gradient(150deg, #0f172a 12%, transparent 12.5%, transparent 87%, #0f172a 87.5%, #0f172a),
-                linear-gradient(60deg, #1e293b 25%, transparent 25.5%, transparent 75%, #1e293b 75%, #1e293b),
-                linear-gradient(60deg, #1e293b 25%, transparent 25.5%, transparent 75%, #1e293b 75%, #1e293b);
-            background-size: 80px 140px;
-            background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
-            color: var(--text);
-            font-family: 'Monaco', 'Consolas', monospace;
+            background: #02040a;
+            font-family: var(--font);
             display: flex; align-items: center; justify-content: center;
-            height: 100vh; overflow: hidden;
+            height: 100vh; color: white; overflow: hidden;
         }
 
-        /* Futuristic Scanning Card */
-        .card {
-            position: relative;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 210, 255, 0.3);
-            border-radius: 2px; /* Sharp edges look more military/futuristic */
-            padding: 50px 30px;
-            width: 320px;
+        /* Moving colorful blobs for the glass to blur over */
+        .blob {
+            position: absolute; width: 300px; height: 300px;
+            background: linear-gradient(135deg, var(--blue), #a29bfe);
+            filter: blur(80px); border-radius: 50%; z-index: -1;
+            animation: move 10s infinite alternate;
+        }
+        .blob-2 {
+            bottom: 10%; right: 10%; width: 250px; height: 250px;
+            background: linear-gradient(135deg, #667eea, var(--purple));
+            animation: move 8s infinite alternate-reverse;
+        }
+        @keyframes move { from { transform: translate(0,0); } to { transform: translate(50px, 100px); } }
+
+        /* The Main Glass Card */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px; /* Highly rounded aesthetic */
+            padding: 40px;
+            width: 85%; max-width: 340px;
             text-align: center;
-            box-shadow: 0 0 50px rgba(0,0,0,1);
-            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        /* Laser Scan Line Animation */
-        .card::after {
-            content: '';
-            position: absolute;
-            top: -100%; left: 0;
-            width: 100%; height: 2px;
-            background: var(--primary);
-            box-shadow: 0 0 15px var(--primary);
-            animation: scan 4s linear infinite;
+        .icon-circle {
+            width: 60px; height: 60px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px; margin: 0 auto 25px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
-        @keyframes scan {
-            0% { top: 0%; }
-            100% { top: 100%; }
+        h1 { font-size: 1.5rem; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.5px; }
+        p { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 35px; line-height: 1.5; }
+
+        /* Progress Ring Loader */
+        .loader-container {
+            position: relative; width: 80px; height: 80px; margin: 0 auto 30px; display: none;
+        }
+        svg { transform: rotate(-90deg); width: 80px; height: 80px; }
+        circle {
+            fill: none; stroke-width: 6; stroke-linecap: round;
+            stroke: var(--glass-border);
+        }
+        .progress {
+            stroke: var(--blue); stroke-dasharray: 226; stroke-dashoffset: 226;
+            transition: stroke-dashoffset 0.1s linear;
         }
 
-        h1 {
-            font-size: 1.1rem; text-transform: uppercase; letter-spacing: 4px;
-            margin-bottom: 5px; color: var(--primary); text-shadow: var(--neon-glow);
-        }
-
-        .sys-info { font-size: 9px; color: #475569; margin-bottom: 30px; }
-
-        /* Tech Buttons */
+        /* Pill-Shaped Buttons */
         .btn {
-            display: block; width: 100%; padding: 15px; margin: 15px 0;
-            background: transparent; border: 1px solid var(--primary);
-            color: var(--primary); font-weight: bold; cursor: pointer;
-            text-transform: uppercase; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-            transition: all 0.3s;
+            width: 100%; padding: 18px; border-radius: 50px; /* Rounded pill shape */
+            border: none; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 15px;
         }
 
-        #b1:hover { background: rgba(0, 210, 255, 0.1); box-shadow: inset 0 0 10px var(--primary); }
+        #b1 {
+            background: white; color: #000;
+            box-shadow: 0 10px 20px rgba(255,255,255,0.1);
+        }
+        #b1:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(255,255,255,0.2); }
 
-        #b2 { border-color: #334155; color: #334155; cursor: not-allowed; }
-
+        #b2 {
+            background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3);
+            border: 1px solid var(--glass-border); cursor: not-allowed;
+        }
         #b2.active {
-            border-color: var(--secondary); color: white;
-            background: var(--secondary); cursor: pointer;
-            box-shadow: 0 0 20px var(--secondary);
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            color: white; cursor: pointer; border: none;
+            box-shadow: 0 10px 20px rgba(0, 242, 254, 0.3);
         }
-
-        /* Radial Progress Loader */
-        .timer-box { font-size: 20px; font-weight: bold; color: var(--primary); margin: 20px 0; display: none; }
-
     </style>
 </head>
 <body>
+    <div class="blob"></div>
+    <div class="blob-2"></div>
 
-    <div class="card">
-        <h1>Protocol: Alpha</h1>
-        <div class="sys-info">SECURE ENCRYPTION ENABLED // 256-BIT</div>
+    <div class="glass-card">
+        <div class="icon-circle">🔒</div>
+        <h1>Portal Access</h1>
+        <p id="msg">Verify your connection to unlock the destination</p>
 
-        <button id="b1" class="btn">Initiate Connection</button>
-        
-        <div id="timer" class="timer-box">SYNCING: <span id="sec">4.0</span>s</div>
-        
-        <button id="b2" class="btn" disabled>Bypass Firewall</button>
+        <div class="loader-container" id="lBox">
+            <svg>
+                <circle cx="40" cy="40" r="36"></circle>
+                <circle cx="40" cy="40" r="36" class="progress" id="dot"></circle>
+            </svg>
+        </div>
+
+        <button id="b1" class="btn">Begin Verification</button>
+        <button id="b2" class="btn" disabled>Continue</button>
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        const m = params.get('m');
-        const t = atob(params.get('t'));
+        const u = new URLSearchParams(window.location.search);
+        const m = u.get('m');
+        const t = atob(u.get('t'));
         
         const b1 = document.getElementById('b1');
         const b2 = document.getElementById('b2');
-        const timerBox = document.getElementById('timer');
-        const secText = document.getElementById('sec');
+        const lBox = document.getElementById('lBox');
+        const dot = document.getElementById('dot');
+        const msg = document.getElementById('msg');
 
         b1.onclick = () => {
             window.open(m, '_blank');
             b1.style.display = 'none';
-            timerBox.style.display = 'block';
+            lBox.style.display = 'block';
+            msg.innerText = "Processing security layers...";
 
-            let timeLeft = 4.0;
-            const countdown = setInterval(() => {
-                timeLeft -= 0.1;
-                secText.innerText = timeLeft.toFixed(1);
+            let time = 0;
+            const limit = 4000;
+            const dash = 226;
 
-                if (timeLeft <= 0) {
-                    clearInterval(countdown);
-                    timerBox.innerHTML = "VERIFIED ✓";
+            const timer = setInterval(() => {
+                time += 50;
+                let offset = dash - (time / limit) * dash;
+                dot.style.strokeDashoffset = offset;
+
+                if (time >= limit) {
+                    clearInterval(timer);
+                    lBox.style.display = 'none';
                     b2.disabled = false;
                     b2.classList.add('active');
+                    msg.innerText = "Access Granted ✅";
                 }
-            }, 100);
+            }, 50);
         };
 
         b2.onclick = () => { if(!b2.disabled) window.location.href = t; };
