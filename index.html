@@ -3,140 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Secure Access</title>
+    <title>Neural Link Portal</title>
     <style>
         :root {
-            --bg: #01040a;
+            --bg: #010208;
             --blue: #00d2ff;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.12);
+            --light-blue: #3a7bd5;
+            --purple: #9d50bb;
+            --glass: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.15);
         }
 
         body {
             margin: 0; padding: 0;
             background: var(--bg);
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
             color: white;
             width: 100vw; height: 100vh;
             overflow: hidden;
             display: flex; align-items: center; justify-content: center;
         }
 
-        .ambient {
-            position: absolute; width: 600px; height: 600px;
-            background: radial-gradient(circle, #101a44 0%, transparent 70%);
-            filter: blur(100px); opacity: 0.3; z-index: -1;
+        /* 🌌 BACKGROUND ANIMATION: Moving Data Blobs */
+        .ambient-box {
+            position: absolute; width: 100%; height: 100%;
+            overflow: hidden; z-index: -1;
+        }
+        .blob {
+            position: absolute; width: 500px; height: 500px;
+            background: radial-gradient(circle, var(--blue), transparent 70%);
+            filter: blur(120px); opacity: 0.3; border-radius: 50%;
+            animation: float 18s infinite alternate;
+        }
+        .blob-2 {
+            bottom: -100px; right: -100px; width: 450px; height: 450px;
+            background: radial-gradient(circle, var(--purple), transparent 70%);
+            filter: blur(120px); opacity: 0.25; animation: float 14s infinite alternate-reverse;
+        }
+        @keyframes float { 
+            from { transform: translate(-10%, -10%) scale(1); } 
+            to { transform: translate(15%, 20%) scale(1.2); } 
         }
 
+        /* 🏛️ THE CARD: Lengthened & Full */
         .glass-card {
             position: relative;
             background: var(--glass);
             backdrop-filter: blur(40px);
             -webkit-backdrop-filter: blur(40px);
             border: 1px solid var(--glass-border);
-            border-radius: 45px;
-            padding: 60px 35px;
+            border-radius: 48px;
+            padding: 70px 35px; /* Maximum vertical space */
             text-align: center;
-            width: 88%; max-width: 360px;
-            min-height: 480px;
-            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            width: 88%; max-width: 370px;
+            min-height: 520px; /* Lengthened middle area */
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.9);
             overflow: hidden;
-            display: flex; flex-direction: column; justify-content: center;
+            display: flex; flex-direction: column; justify-content: space-between;
         }
 
-        /* ⚡ BARELY VISIBLE SUBTLE LASER */
-        .glass-card::before {
-            content: '';
-            position: absolute;
-            left: 0; width: 100%; height: 1px; /* Thinner line */
+        /* ⚡ THE ALIGNED LASER ARRAY (3 Aligned Lines) */
+        .laser-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+        }
+        .laser-line {
+            position: absolute; left: 0; width: 100%; height: 2px;
             background: linear-gradient(90deg, transparent, var(--blue), transparent);
-            box-shadow: 0 0 10px var(--blue);
-            animation: stealthScan 5s ease-in-out infinite; /* Slower, smoother */
-            z-index: 5;
-            opacity: 0.15; /* Barely visible as requested */
+            box-shadow: 0 0 15px var(--blue);
+            opacity: 0.6;
+            animation: arrayScan 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        .l-1 { animation-delay: 0s; }
+        .l-2 { animation-delay: 0.15s; opacity: 0.3; height: 1px; } /* Thinner follow line */
+        .l-3 { animation-delay: 0.3s; opacity: 0.15; height: 1px; } /* Final trace line */
+
+        @keyframes arrayScan {
+            0% { top: -10%; opacity: 0; }
+            20% { opacity: 0.7; }
+            80% { opacity: 0.7; }
+            100% { top: 110%; opacity: 0; }
         }
 
-        @keyframes stealthScan {
-            0% { top: 0%; opacity: 0; }
-            15% { opacity: 0.15; }
-            85% { opacity: 0.15; }
-            100% { top: 100%; opacity: 0; }
-        }
-
+        /* TYPOGRAPHY */
         h1 { 
-            font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; 
-            letter-spacing: -1.2px; 
+            font-size: 1.9rem; font-weight: 800; margin: 0;
+            letter-spacing: -1.5px; 
+            background: linear-gradient(to bottom, #fff, #aaa);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         
         #msg { 
             font-size: 14px; color: rgba(255,255,255,0.4); 
-            margin-bottom: 50px; line-height: 1.6; 
+            margin-top: 15px; line-height: 1.6; 
+            min-height: 45px;
         }
 
-        /* CIRCLE PROGRESS */
-        .loader-container { position: relative; width: 110px; height: 110px; margin: 0 auto 45px; display: none; }
-        svg { transform: rotate(-90deg); width: 110px; height: 110px; overflow: visible; }
-        circle { fill: none; stroke-width: 6; stroke: rgba(255,255,255,0.05); }
+        /* LOADER AREA */
+        .loader-container { position: relative; width: 120px; height: 120px; margin: 40px auto; display: none; }
+        svg { transform: rotate(-90deg); width: 120px; height: 120px; overflow: visible; }
+        circle { fill: none; stroke-width: 8; stroke: rgba(255,255,255,0.05); }
         .progress {
-            stroke: var(--blue); stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
+            stroke: var(--blue); stroke-dasharray: 314; stroke-dashoffset: 314;
             transition: stroke-dashoffset 0.1s linear;
-            filter: drop-shadow(0 0 8px var(--blue));
+            filter: drop-shadow(0 0 15px var(--blue));
         }
 
         /* BUTTONS */
         .btn {
-            width: 100%; padding: 22px; border-radius: 22px;
-            border: none; font-size: 15px; font-weight: 700;
-            cursor: pointer; transition: 0.4s;
-            margin-bottom: 18px; text-transform: uppercase; letter-spacing: 1.5px;
+            width: 100%; padding: 22px; border-radius: 24px;
+            border: none; font-size: 15px; font-weight: 800;
+            cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase; letter-spacing: 2px;
         }
 
         #b1 {
             background: #ffffff; color: #000;
-            box-shadow: 0 15px 35px rgba(255,255,255,0.1);
+            box-shadow: 0 20px 40px rgba(255,255,255,0.15);
         }
+        #b1:hover { transform: translateY(-5px); }
 
+        /* DEEP GLASS CONTINUE */
         #b2 {
             background: rgba(255, 255, 255, 0.02);
             color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             cursor: not-allowed;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
+            margin-top: 15px;
         }
 
         #b2.active {
-            background: linear-gradient(135deg, rgba(0, 210, 255, 0.25), rgba(157, 80, 187, 0.35));
+            background: linear-gradient(135deg, rgba(0, 210, 255, 0.35), rgba(157, 80, 187, 0.45));
             color: white;
             cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 20px 40px rgba(0, 210, 255, 0.2);
-            animation: pulseGlow 3s infinite;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 
+                0 25px 50px rgba(157, 80, 187, 0.3),
+                inset 0 1px 2px rgba(255, 255, 255, 0.5);
+            animation: activePulse 2s infinite;
         }
 
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 15px 30px rgba(0, 210, 255, 0.2); }
-            50% { box-shadow: 0 15px 45px rgba(0, 210, 255, 0.4); }
+        @keyframes activePulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 20px 40px rgba(157, 80, 187, 0.3); }
+            50% { transform: scale(1.02); box-shadow: 0 25px 60px rgba(0, 210, 255, 0.5); }
         }
     </style>
 </head>
 <body>
-    <div class="ambient"></div>
+    <div class="ambient-box">
+        <div class="blob"></div>
+        <div class="blob-2"></div>
+    </div>
 
     <div class="glass-card">
-        <h1>Secure Link</h1>
-        <p id="msg">Verification required.<br>Please maintain connection.</p>
+        <div class="laser-container">
+            <div class="laser-line l-1"></div>
+            <div class="laser-line l-2"></div>
+            <div class="laser-line l-3"></div>
+        </div>
+
+        <div>
+            <h1>Secure Portal</h1>
+            <p id="msg">Awaiting identification...<br>Neural link status: Idle</p>
+        </div>
 
         <div class="loader-container" id="lBox">
             <svg viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45"></circle>
-                <circle cx="50" cy="50" r="45" class="progress" id="dot"></circle>
+                <circle cx="50" cy="50" r="46"></circle>
+                <circle cx="50" cy="50" r="46" class="progress" id="dot"></circle>
             </svg>
         </div>
 
-        <button id="b1" class="btn">Verify Identity</button>
-        <button id="b2" class="btn" disabled>Continue</button>
+        <div style="width: 100%;">
+            <button id="b1" class="btn">Initiate Verify</button>
+            <button id="b2" class="btn" disabled>Continue Access</button>
+        </div>
     </div>
 
     <script>
@@ -154,11 +196,11 @@
             window.open(m, '_blank');
             b1.style.display = 'none';
             lBox.style.display = 'block';
-            msg.innerHTML = "Processing request...<br>Link unlocks in 4s.";
+            msg.innerHTML = "Syncing encrypted keys...<br>Link active in 4s";
 
             let time = 0;
             const limit = 4000;
-            const dash = 282.7;
+            const dash = 289; // 2 * PI * 46
 
             const timer = setInterval(() => {
                 time += 50;
@@ -170,7 +212,7 @@
                     lBox.style.display = 'none';
                     b2.disabled = false;
                     b2.classList.add('active');
-                    msg.innerHTML = "Access Authorized ✅";
+                    msg.innerHTML = "Identity Confirmed ✅<br>Access Granted";
                 }
             }, 50);
         };
