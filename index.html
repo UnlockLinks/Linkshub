@@ -55,6 +55,26 @@
         }
         @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(15%, 15%); } }
 
+        /* ✨ FUTURISTIC RANDOM LINES */
+        .futuristic-line {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to bottom, rgba(166,240,255,0.2), transparent);
+            opacity: 0.2;
+            animation: flicker 6s infinite alternate;
+        }
+        .line1 { top: 20%; left: 10%; }
+        .line2 { top: 50%; left: 80%; height: 150px; }
+        .line3 { top: 70%; left: 40%; height: 120px; }
+        .line4 { top: 30%; left: 60%; height: 90px; }
+
+        @keyframes flicker {
+            0% { opacity: 0.1; transform: scaleY(1); }
+            50% { opacity: 0.3; transform: scaleY(1.2); }
+            100% { opacity: 0.1; transform: scaleY(1); }
+        }
+
         /* 🏛️ COMPACT GLASS CARD */
         .glass-card {
             position: relative;
@@ -99,7 +119,7 @@
             box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
         }
 
-        /* 💎 THE HYPER-GLASS "CONTINUE" BUTTON */
+        /* 💎 ENHANCED GLASSY LIGHT-BLUE "CONTINUE" BUTTON */
         #b2 {
             background: transparent;
             color: rgba(255, 255, 255, 0.05);
@@ -109,95 +129,35 @@
         }
 
         #b2.active {
-            background: rgba(255, 255, 255, 0.03); /* Transparent center */
+            background: rgba(255, 255, 255, 0.05);
             color: #fff;
             cursor: pointer;
-            border: 1px solid rgba(166, 240, 255, 0.8);
+            border: 1px solid rgba(166, 240, 255, 0.9);
             backdrop-filter: blur(40px);
             -webkit-backdrop-filter: blur(40px);
-            /* THE SPECULAR EFFECT: White top rim + Blue neon pulse */
             box-shadow: 
                 0 15px 35px rgba(0, 0, 0, 0.5),
-                inset 0 1.5px 0px 0px rgba(255, 255, 255, 0.95), /* Sharp White Edge */
-                inset 0 0 20px rgba(0, 210, 255, 0.2);          /* Internal Plasma */
+                inset 0 2px 0px rgba(255, 255, 255, 0.9),
+                inset 0 0 25px rgba(166, 240, 255, 0.6),
+                0 0 25px rgba(166, 240, 255, 0.9),
+                0 0 60px rgba(166, 240, 255, 0.7);
             animation: crystalGlow 2.5s infinite ease-in-out;
         }
 
         @keyframes crystalGlow {
             0%, 100% { 
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 1.5px 0px 0px rgba(255, 255, 255, 0.8), 0 0 10px rgba(0, 210, 255, 0.4);
-                border-color: rgba(166, 240, 255, 0.5);
+                box-shadow: 
+                    0 15px 35px rgba(0, 0, 0, 0.5),
+                    inset 0 2px 0px rgba(255, 255, 255, 0.8),
+                    0 0 20px rgba(166, 240, 255, 0.6),
+                    0 0 40px rgba(166, 240, 255, 0.5);
+                border-color: rgba(166, 240, 255, 0.6);
             }
             50% { 
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 1.5px 0px 0px rgba(255, 255, 255, 1), 0 0 35px rgba(0, 210, 255, 0.8);
+                box-shadow: 
+                    0 15px 35px rgba(0, 0, 0, 0.5),
+                    inset 0 2px 0px rgba(255, 255, 255, 1),
+                    0 0 45px rgba(166, 240, 255, 1),
+                    0 0 80px rgba(166, 240, 255, 0.9);
                 border-color: rgba(166, 240, 255, 1);
-                background: rgba(255, 255, 255, 0.1);
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="ambient-container">
-        <div class="blob"></div>
-        <div class="flux-line f1"></div>
-        <div class="flux-line f2"></div>
-        <div class="flux-line f3"></div>
-    </div>
-
-    <div class="glass-card">
-        <div class="content-stack">
-            <h1>System Link</h1>
-            <p id="msg">Verifying security certificates...<br>Link unlocks in 4 seconds.</p>
-
-            <div class="loader-container" id="lBox">
-                <svg viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="45"></circle>
-                    <circle cx="50" cy="50" r="45" class="progress" id="dot"></circle>
-                </svg>
-            </div>
-
-            <button id="b1" class="btn">Initiate Verify</button>
-            <button id="b2" class="btn" disabled>Continue Access</button>
-        </div>
-    </div>
-
-    <script>
-        const u = new URLSearchParams(window.location.search);
-        const m = u.get('m');
-        const t = atob(u.get('t'));
-        
-        const b1 = document.getElementById('b1');
-        const b2 = document.getElementById('b2');
-        const lBox = document.getElementById('lBox');
-        const dot = document.getElementById('dot');
-        const msg = document.getElementById('msg');
-
-        b1.onclick = () => {
-            window.open(m, '_blank');
-            b1.style.display = 'none';
-            lBox.style.display = 'block';
-            msg.innerHTML = "Processing neural handshake...<br>Please wait.";
-
-            let time = 0;
-            const limit = 4000;
-            const dash = 282.7;
-
-            const timer = setInterval(() => {
-                time += 50;
-                let offset = dash - (time / limit) * dash;
-                dot.style.strokeDashoffset = offset;
-
-                if (time >= limit) {
-                    clearInterval(timer);
-                    lBox.style.display = 'none';
-                    b2.disabled = false;
-                    b2.classList.add('active');
-                    msg.innerHTML = "Session Authorized ✅";
-                }
-            }, 50);
-        };
-
-        b2.onclick = () => { if(!b2.disabled) window.location.href = t; };
-    </script>
-</body>
-</html>
+                background: rgba(255, 255, 255, 0
