@@ -6,124 +6,119 @@
     <title>Secure Network Portal</title>
     <style>
         :root {
-            --bg-deep: #010a1a;
-            --blue: #00d2ff;
+            --bg-deep: #000814;
+            --electric-blue: #00d2ff;
             --deep-blue: #0045ff;
-            --glass: rgba(255, 255, 255, 0.07);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            --royal-blue: #001dff;
+            --glass: rgba(0, 20, 50, 0.25);
+            --glass-border: rgba(0, 210, 255, 0.4);
         }
 
-        html {
-            background-color: #010a1a;
-        }
-
-        body {
+        html, body {
             margin: 0; padding: 0;
-            /* UPDATED: More vibrant blue gradient background */
-            background: radial-gradient(circle at center, #001a3d 0%, #010a1a 100%);
+            width: 100vw; height: 100vh;
+            background-color: #000814;
             font-family: 'Inter', -apple-system, sans-serif;
             color: white;
-            width: 100vw; height: 100vh;
             overflow: hidden;
             display: flex; align-items: center; justify-content: center;
         }
 
+        /* 🌌 VIBRANT BLUE MESH BACKGROUND */
         .ambient-container {
-            position: absolute; width: 100%; height: 100%;
-            overflow: hidden; z-index: -1;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(0, 210, 255, 0.4) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(0, 69, 255, 0.4) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(0, 10, 30, 1) 0%, #000814 100%);
         }
 
-        /* FIRST GLOW: Primary Blue */
         .glow-sphere {
-            position: absolute; 
-            width: 900px; height: 900px; 
-            background: radial-gradient(circle, rgba(0, 69, 255, 0.4) 0%, rgba(0, 210, 255, 0.15) 50%, transparent 70%);
-            filter: blur(80px); border-radius: 50%;
-            top: -15%; left: -15%;
-            animation: drift 20s infinite alternate ease-in-out;
-            pointer-events: none;
+            position: absolute;
+            width: 120%; height: 120%;
+            top: -10%; left: -10%;
+            background: radial-gradient(circle at center, rgba(0, 163, 255, 0.15) 0%, transparent 50%);
+            animation: pulse 8s infinite alternate ease-in-out;
         }
 
-        /* NEW: SECOND GLOW: Light Cyan/Blue for more color coverage */
-        .glow-sphere-2 {
-            position: absolute; 
-            width: 700px; height: 700px; 
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.25) 0%, transparent 60%);
-            filter: blur(100px); border-radius: 50%;
-            bottom: -10%; right: -10%;
-            animation: drift-reverse 25s infinite alternate ease-in-out;
-            pointer-events: none;
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.1); opacity: 0.8; }
         }
 
-        @keyframes drift { 
-            from { transform: translate(0, 0); } 
-            to { transform: translate(10%, 10%); } 
-        }
-
-        @keyframes drift-reverse { 
-            from { transform: translate(0, 0); } 
-            to { transform: translate(-10%, -10%); } 
-        }
-
+        /* 🏛️ ENHANCED BLUE GLASS CARD */
         .glass-card {
             position: relative;
             background: var(--glass);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            backdrop-filter: blur(40px) saturate(150%);
+            -webkit-backdrop-filter: blur(40px) saturate(150%);
             border: 1px solid var(--glass-border);
             border-radius: 40px;
             padding: 45px 30px;
             text-align: center;
             width: 82%; max-width: 340px;
             min-height: 380px;
-            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6), 
-                        inset 0 0 20px rgba(0, 210, 255, 0.1); /* Subtle inner blue glow */
+            /* Blue glow around the card */
+            box-shadow: 0 0 60px rgba(0, 210, 255, 0.2), 0 40px 100px rgba(0, 0, 0, 0.5);
             display: flex; flex-direction: column; justify-content: center;
         }
 
         .content-stack { position: relative; z-index: 10; width: 100%; }
 
-        h1 { font-size: 1.8rem; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.5px; }
-        p { font-size: 14px; color: rgba(255, 255, 255, 0.6); margin-bottom: 35px; line-height: 1.6; }
+        h1 { 
+            font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; 
+            background: linear-gradient(to bottom, #fff, var(--electric-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        p { font-size: 14px; color: rgba(180, 230, 255, 0.8); margin-bottom: 35px; line-height: 1.6; }
 
         .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 30px; display: none; }
         svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
-        circle { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.05); }
+        circle { fill: none; stroke-width: 8; stroke: rgba(0, 210, 255, 0.1); }
         .progress {
-            stroke: var(--blue); stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
-            transition: stroke-dashoffset 0.1s linear;
+            stroke: var(--electric-blue); 
+            stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 8px var(--electric-blue)); /* Glowing loader line */
         }
 
         .btn {
             width: 100%; padding: 20px; border-radius: 18px;
-            border: none; font-size: 14px; font-weight: 700;
-            cursor: pointer; transition: 0.3s ease;
-            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;
+            border: none; font-size: 14px; font-weight: 800;
+            cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px;
         }
 
-        #b1 { background: #ffffff; color: #000; box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
-        #b1:hover { background: var(--blue); color: #fff; }
+        #b1 { 
+            background: var(--electric-blue); 
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+        }
+        #b1:hover { transform: scale(1.02); box-shadow: 0 0 30px rgba(0, 210, 255, 0.6); }
 
         #b2 {
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 210, 255, 0.05);
+            color: rgba(0, 210, 255, 0.2);
+            border: 1px solid rgba(0, 210, 255, 0.2);
             cursor: not-allowed;
         }
 
         #b2.active {
             background: #ffffff;
-            color: #000000;
+            color: #000;
             cursor: pointer;
             border: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.4);
         }
     </style>
 </head>
 <body>
     <div class="ambient-container">
         <div class="glow-sphere"></div>
-        <div class="glow-sphere-2"></div> </div>
+    </div>
 
     <div class="glass-card">
         <div class="content-stack">
@@ -137,7 +132,7 @@
                 </svg>
             </div>
 
-            <button id="b1" class="btn">Start</button>
+            <button id="b1" class="btn">Start Verification</button>
             <button id="b2" class="btn" disabled>Continue</button>
         </div>
     </div>
