@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Secure Portal</title>
+    <title>Secure Access</title>
     <style>
         :root {
-            --bg: #010409;
-            --blue-glow: #00d2ff;
-            --light-blue: #3a7bd5;
-            --glass: rgba(255, 255, 255, 0.02);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg: #01040a;
+            --blue: #00d2ff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.12);
         }
 
         body {
@@ -23,99 +22,102 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* Ambient Pulsing Background */
         .ambient {
-            position: absolute; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, #1a2a6c 0%, #010409 70%);
-            z-index: -1;
+            position: absolute; width: 600px; height: 600px;
+            background: radial-gradient(circle, #101a44 0%, transparent 70%);
+            filter: blur(100px); opacity: 0.3; z-index: -1;
         }
 
-        /* Centered Card */
         .glass-card {
             position: relative;
             background: var(--glass);
             backdrop-filter: blur(40px);
             -webkit-backdrop-filter: blur(40px);
             border: 1px solid var(--glass-border);
-            border-radius: 40px;
-            padding: 50px 30px;
+            border-radius: 45px;
+            padding: 60px 35px;
             text-align: center;
-            width: 85%; max-width: 340px;
+            width: 88%; max-width: 360px;
+            min-height: 480px;
             box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
-            overflow: hidden; /* Clips the scanning line */
+            overflow: hidden;
+            display: flex; flex-direction: column; justify-content: center;
         }
 
-        /* ⚡ THE SCANNING LINE (Moving through the card) */
+        /* ⚡ BARELY VISIBLE SUBTLE LASER */
         .glass-card::before {
             content: '';
             position: absolute;
-            top: -100%; left: 0;
-            width: 100%; height: 80px;
-            background: linear-gradient(to bottom, transparent, rgba(0, 210, 255, 0.15), transparent);
-            border-bottom: 2px solid var(--blue-glow);
-            box-shadow: 0 10px 20px rgba(0, 210, 255, 0.2);
-            animation: scanLine 4s ease-in-out infinite;
-            z-index: 1;
+            left: 0; width: 100%; height: 1px; /* Thinner line */
+            background: linear-gradient(90deg, transparent, var(--blue), transparent);
+            box-shadow: 0 0 10px var(--blue);
+            animation: stealthScan 5s ease-in-out infinite; /* Slower, smoother */
+            z-index: 5;
+            opacity: 0.15; /* Barely visible as requested */
         }
 
-        @keyframes scanLine {
-            0% { top: -20%; }
-            50% { top: 100%; }
-            100% { top: -20%; }
+        @keyframes stealthScan {
+            0% { top: 0%; opacity: 0; }
+            15% { opacity: 0.15; }
+            85% { opacity: 0.15; }
+            100% { top: 100%; opacity: 0; }
         }
 
-        h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 10px; color: var(--blue-glow); text-shadow: 0 0 15px rgba(0, 210, 255, 0.3); }
-        p { font-size: 13px; color: rgba(255, 255, 255, 0.4); margin-bottom: 40px; text-transform: uppercase; letter-spacing: 1px; }
+        h1 { 
+            font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; 
+            letter-spacing: -1.2px; 
+        }
+        
+        #msg { 
+            font-size: 14px; color: rgba(255,255,255,0.4); 
+            margin-bottom: 50px; line-height: 1.6; 
+        }
 
-        /* LOADING RING */
-        .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 35px; display: none; }
-        svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
-        circle { fill: none; stroke-width: 5; stroke: rgba(255,255,255,0.05); }
+        /* CIRCLE PROGRESS */
+        .loader-container { position: relative; width: 110px; height: 110px; margin: 0 auto 45px; display: none; }
+        svg { transform: rotate(-90deg); width: 110px; height: 110px; overflow: visible; }
+        circle { fill: none; stroke-width: 6; stroke: rgba(255,255,255,0.05); }
         .progress {
-            stroke: var(--blue-glow); stroke-dasharray: 251.2; stroke-dashoffset: 251.2;
+            stroke: var(--blue); stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
             transition: stroke-dashoffset 0.1s linear;
-            filter: drop-shadow(0 0 8px var(--blue-glow));
+            filter: drop-shadow(0 0 8px var(--blue));
         }
 
         /* BUTTONS */
         .btn {
-            width: 100%; padding: 20px; border-radius: 20px;
-            border: none; font-size: 14px; font-weight: 800;
+            width: 100%; padding: 22px; border-radius: 22px;
+            border: none; font-size: 15px; font-weight: 700;
             cursor: pointer; transition: 0.4s;
-            margin-bottom: 15px; letter-spacing: 1px;
-            position: relative; z-index: 2;
+            margin-bottom: 18px; text-transform: uppercase; letter-spacing: 1.5px;
         }
 
         #b1 {
-            background: white; color: black;
-            box-shadow: 0 10px 25px rgba(255,255,255,0.1);
+            background: #ffffff; color: #000;
+            box-shadow: 0 15px 35px rgba(255,255,255,0.1);
         }
 
-        /* HYPER-GLASS CONTINUE BUTTON */
         #b2 {
             background: rgba(255, 255, 255, 0.02);
-            color: rgba(0, 210, 255, 0.2);
-            border: 1px solid rgba(0, 210, 255, 0.1);
+            color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             cursor: not-allowed;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
         }
 
         #b2.active {
-            background: linear-gradient(135deg, rgba(0, 210, 255, 0.2), rgba(58, 123, 213, 0.3));
+            background: linear-gradient(135deg, rgba(0, 210, 255, 0.25), rgba(157, 80, 187, 0.35));
             color: white;
             cursor: pointer;
-            border: 1px solid var(--blue-glow);
-            box-shadow: 
-                0 15px 40px rgba(0, 210, 255, 0.4),
-                inset 0 0 15px rgba(0, 210, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(20px);
-            animation: pulseGlow 2s infinite;
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 210, 255, 0.2);
+            animation: pulseGlow 3s infinite;
         }
 
         @keyframes pulseGlow {
-            0% { box-shadow: 0 0 20px rgba(0, 210, 255, 0.3), inset 0 0 10px rgba(0, 210, 255, 0.2); }
-            50% { box-shadow: 0 0 40px rgba(0, 210, 255, 0.6), inset 0 0 20px rgba(0, 210, 255, 0.4); }
-            100% { box-shadow: 0 0 20px rgba(0, 210, 255, 0.3), inset 0 0 10px rgba(0, 210, 255, 0.2); }
+            0%, 100% { box-shadow: 0 15px 30px rgba(0, 210, 255, 0.2); }
+            50% { box-shadow: 0 15px 45px rgba(0, 210, 255, 0.4); }
         }
     </style>
 </head>
@@ -123,18 +125,18 @@
     <div class="ambient"></div>
 
     <div class="glass-card">
-        <h1>SECURE ACCESS</h1>
-        <p id="msg">Verifying protocol...</p>
+        <h1>Secure Link</h1>
+        <p id="msg">Verification required.<br>Please maintain connection.</p>
 
         <div class="loader-container" id="lBox">
             <svg viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40"></circle>
-                <circle cx="50" cy="50" r="40" class="progress" id="dot"></circle>
+                <circle cx="50" cy="50" r="45"></circle>
+                <circle cx="50" cy="50" r="45" class="progress" id="dot"></circle>
             </svg>
         </div>
 
-        <button id="b1" class="btn">Start Connection</button>
-        <button id="b2" class="btn" disabled>Proceed to Link</button>
+        <button id="b1" class="btn">Verify Identity</button>
+        <button id="b2" class="btn" disabled>Continue</button>
     </div>
 
     <script>
@@ -152,11 +154,11 @@
             window.open(m, '_blank');
             b1.style.display = 'none';
             lBox.style.display = 'block';
-            msg.innerText = "Bypassing firewall...";
+            msg.innerHTML = "Processing request...<br>Link unlocks in 4s.";
 
             let time = 0;
             const limit = 4000;
-            const dash = 251.2;
+            const dash = 282.7;
 
             const timer = setInterval(() => {
                 time += 50;
@@ -168,7 +170,7 @@
                     lBox.style.display = 'none';
                     b2.disabled = false;
                     b2.classList.add('active');
-                    msg.innerText = "System verified ✅";
+                    msg.innerHTML = "Access Authorized ✅";
                 }
             }, 50);
         };
