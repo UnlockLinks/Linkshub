@@ -6,7 +6,7 @@
     <title>Secure Network Portal</title>
     <style>
         :root {
-            --bg: #03081a;
+            --bg: #020612;
             --blue: #00d2ff;
             --light-blue: #a6f0ff;
             --glass: rgba(255, 255, 255, 0.08);
@@ -23,37 +23,39 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* 🌌 BACKGROUND & AMBIENT GLOW */
+        /* 🌌 ATMOSPHERIC FLUX LINES */
         .ambient-container {
             position: absolute; width: 100%; height: 100%;
             overflow: hidden; z-index: -1;
         }
+        
+        .flux-line {
+            position: absolute;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.1;
+            animation: fluxMove 25s infinite linear;
+        }
+        .f1 { width: 900px; height: 500px; top: -10%; left: -20%; }
+        .f2 { width: 700px; height: 800px; bottom: -15%; right: -10%; animation-direction: reverse; animation-duration: 35s; }
+        .f3 { width: 400px; height: 400px; top: 30%; left: 50%; animation-duration: 15s; }
+
+        @keyframes fluxMove {
+            0% { transform: rotate(0deg) scale(1); opacity: 0.05; }
+            50% { transform: rotate(180deg) scale(1.1); opacity: 0.2; }
+            100% { transform: rotate(360deg) scale(1); opacity: 0.05; }
+        }
+
         .blob {
             position: absolute; width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.3), transparent 70%);
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.35), transparent 70%);
             filter: blur(80px); border-radius: 50%;
-            animation: move 15s infinite alternate;
+            animation: move 12s infinite alternate;
         }
         @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(15%, 15%); } }
 
-        /* 🌀 SEMI-VISIBLE ROUNDED FLUX LINES */
-        .flux-line {
-            position: absolute;
-            border: 1px solid rgba(0, 210, 255, 0.15);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
-            animation: fluxDrift 20s infinite linear;
-        }
-        .f1 { width: 800px; height: 400px; top: -10%; left: -20%; animation-duration: 25s; }
-        .f2 { width: 600px; height: 900px; bottom: -20%; right: -10%; animation-duration: 35s; animation-direction: reverse; }
-        
-        @keyframes fluxDrift {
-            0% { transform: rotate(0deg) scale(1); opacity: 0.1; }
-            50% { transform: rotate(180deg) scale(1.1); opacity: 0.3; }
-            100% { transform: rotate(360deg) scale(1); opacity: 0.1; }
-        }
-
+        /* 🏛️ COMPACT GLASS CARD */
         .glass-card {
             position: relative;
             background: var(--glass);
@@ -88,7 +90,7 @@
         .btn {
             width: 100%; padding: 20px; border-radius: 20px;
             border: none; font-size: 15px; font-weight: 700;
-            cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer; transition: 0.3s cubic-bezier(0.19, 1, 0.22, 1);
             margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px;
         }
 
@@ -97,37 +99,37 @@
             box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
         }
 
-        /* 💎 THE HYPER-GLOSS CRYSTAL BUTTON */
+        /* 💎 THE HYPER-GLASS "CONTINUE" BUTTON */
         #b2 {
             background: transparent;
-            color: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             cursor: not-allowed;
             backdrop-filter: blur(5px);
         }
 
         #b2.active {
-            background: rgba(255, 255, 255, 0.05); /* Transparent mode */
+            background: rgba(255, 255, 255, 0.03); /* Transparent center */
             color: #fff;
             cursor: pointer;
-            border: 1px solid rgba(166, 240, 255, 0.6);
+            border: 1px solid rgba(166, 240, 255, 0.8);
             backdrop-filter: blur(40px);
             -webkit-backdrop-filter: blur(40px);
-            /* SPECULAR GLOSS: Sharp white top edge + Blue inner glow */
+            /* THE SPECULAR EFFECT: White top rim + Blue neon pulse */
             box-shadow: 
                 0 15px 35px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0px 1px rgba(255, 255, 255, 0.8), /* Specular Rim */
-                inset 0 0 15px rgba(0, 210, 255, 0.3);       /* Inner Blue Heat */
-            animation: intenseGlow 2s infinite ease-in-out;
+                inset 0 1.5px 0px 0px rgba(255, 255, 255, 0.95), /* Sharp White Edge */
+                inset 0 0 20px rgba(0, 210, 255, 0.2);          /* Internal Plasma */
+            animation: crystalGlow 2.5s infinite ease-in-out;
         }
 
-        @keyframes intenseGlow {
+        @keyframes crystalGlow {
             0%, 100% { 
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 1px 0px 1px rgba(255, 255, 255, 0.7), 0 0 10px rgba(0, 210, 255, 0.4);
-                border-color: rgba(166, 240, 255, 0.4);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 1.5px 0px 0px rgba(255, 255, 255, 0.8), 0 0 10px rgba(0, 210, 255, 0.4);
+                border-color: rgba(166, 240, 255, 0.5);
             }
             50% { 
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 1px 0px 1px rgba(255, 255, 255, 1), 0 0 30px rgba(0, 210, 255, 0.8);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 1.5px 0px 0px rgba(255, 255, 255, 1), 0 0 35px rgba(0, 210, 255, 0.8);
                 border-color: rgba(166, 240, 255, 1);
                 background: rgba(255, 255, 255, 0.1);
             }
@@ -139,6 +141,7 @@
         <div class="blob"></div>
         <div class="flux-line f1"></div>
         <div class="flux-line f2"></div>
+        <div class="flux-line f3"></div>
     </div>
 
     <div class="glass-card">
