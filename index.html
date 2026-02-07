@@ -1,185 +1,187 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Secure Network Portal</title>
-    <style>
-        :root {
-            --bg-bright-blue: #0033ff;
-            --electric-blue: #00d2ff;
-            --deep-blue: #001a3d;
-            --glass: rgba(0, 50, 150, 0.15); /* Tinted glass for more blue vibe */
-            --glass-border: rgba(0, 210, 255, 0.5);
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Secure Network Portal</title>
+    <style>
+        :root {
+            --bg-deep: #010a1a;
+            --blue: #00d2ff;
+            --deep-blue: #0045ff;
+            --glass: rgba(255, 255, 255, 0.07);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
 
-        html {
-            background-color: #001a3d;
-        }
+        html {
+            background-color: #010a1a;
+        }
 
-        body {
-            margin: 0; padding: 0;
-            /* UPDATED: Much brighter, multi-layered blue gradient */
-            background: linear-gradient(135deg, #001a3d 0%, #0045ff 50%, #00d2ff 100%);
-            font-family: 'Inter', -apple-system, sans-serif;
-            color: white;
-            width: 100vw; height: 100vh;
-            overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-        }
+        body {
+            margin: 0; padding: 0;
+            /* UPDATED: More vibrant blue gradient background */
+            background: radial-gradient(circle at center, #001a3d 0%, #010a1a 100%);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: white;
+            width: 100vw; height: 100vh;
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
 
-        .ambient-container {
-            position: absolute; width: 100%; height: 100%;
-            overflow: hidden; z-index: -1;
-        }
+        .ambient-container {
+            position: absolute; width: 100%; height: 100%;
+            overflow: hidden; z-index: -1;
+        }
 
-        /* BRIGHTER GLOWS: Increased opacity and size */
-        .glow-sphere {
-            position: absolute; 
-            width: 1000px; height: 1000px; 
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.5) 0%, rgba(0, 69, 255, 0.2) 50%, transparent 70%);
-            filter: blur(60px); border-radius: 50%;
-            top: -20%; left: -20%;
-            animation: drift 15s infinite alternate ease-in-out;
-            pointer-events: none;
-        }
+        /* FIRST GLOW: Primary Blue */
+        .glow-sphere {
+            position: absolute; 
+            width: 900px; height: 900px; 
+            background: radial-gradient(circle, rgba(0, 69, 255, 0.4) 0%, rgba(0, 210, 255, 0.15) 50%, transparent 70%);
+            filter: blur(80px); border-radius: 50%;
+            top: -15%; left: -15%;
+            animation: drift 20s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
 
-        .glow-sphere-2 {
-            position: absolute; 
-            width: 800px; height: 800px; 
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.4) 0%, transparent 60%);
-            filter: blur(80px); border-radius: 50%;
-            bottom: -15%; right: -15%;
-            animation: drift-reverse 18s infinite alternate ease-in-out;
-            pointer-events: none;
-        }
+        /* NEW: SECOND GLOW: Light Cyan/Blue for more color coverage */
+        .glow-sphere-2 {
+            position: absolute; 
+            width: 700px; height: 700px; 
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.25) 0%, transparent 60%);
+            filter: blur(100px); border-radius: 50%;
+            bottom: -10%; right: -10%;
+            animation: drift-reverse 25s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
 
-        @keyframes drift { 
-            from { transform: translate(0, 0); } 
-            to { transform: translate(15%, 15%); } 
-        }
+        @keyframes drift { 
+            from { transform: translate(0, 0); } 
+            to { transform: translate(10%, 10%); } 
+        }
 
-        @keyframes drift-reverse { 
-            from { transform: translate(0, 0); } 
-            to { transform: translate(-15%, -15%); } 
-        }
+        @keyframes drift-reverse { 
+            from { transform: translate(0, 0); } 
+            to { transform: translate(-10%, -10%); } 
+        }
 
-        .glass-card {
-            position: relative;
-            background: var(--glass);
-            backdrop-filter: blur(25px) saturate(150%); /* Added saturation to pull more blue through */
-            -webkit-backdrop-filter: blur(25px) saturate(150%);
-            border: 1px solid var(--glass-border);
-            border-radius: 40px;
-            padding: 45px 30px;
-            text-align: center;
-            width: 82%; max-width: 340px;
-            min-height: 380px;
-            /* Glow effect around the card */
-            box-shadow: 0 0 50px rgba(0, 210, 255, 0.3), 0 40px 100px rgba(0, 0, 0, 0.4);
-            display: flex; flex-direction: column; justify-content: center;
-        }
+        .glass-card {
+            position: relative;
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 45px 30px;
+            text-align: center;
+            width: 82%; max-width: 340px;
+            min-height: 380px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6), 
+                        inset 0 0 20px rgba(0, 210, 255, 0.1); /* Subtle inner blue glow */
+            display: flex; flex-direction: column; justify-content: center;
+        }
 
-        .content-stack { position: relative; z-index: 10; width: 100%; }
+        .content-stack { position: relative; z-index: 10; width: 100%; }
 
-        h1 { font-size: 1.8rem; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.5px; text-shadow: 0 0 15px rgba(0, 210, 255, 0.5); }
-        p { font-size: 14px; color: rgba(255, 255, 255, 0.8); margin-bottom: 35px; line-height: 1.6; }
+        h1 { font-size: 1.8rem; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.5px; }
+        p { font-size: 14px; color: rgba(255, 255, 255, 0.6); margin-bottom: 35px; line-height: 1.6; }
 
-        .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 30px; display: none; }
-        svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
-        circle { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.1); }
-        .progress {
-            stroke: var(--electric-blue); stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
-            transition: stroke-dashoffset 0.1s linear;
-            filter: drop-shadow(0 0 5px var(--electric-blue)); /* Glowing loader */
-        }
+        .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 30px; display: none; }
+        svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
+        circle { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.05); }
+        .progress {
+            stroke: var(--blue); stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
+            transition: stroke-dashoffset 0.1s linear;
+        }
 
-        .btn {
-            width: 100%; padding: 20px; border-radius: 18px;
-            border: none; font-size: 14px; font-weight: 700;
-            cursor: pointer; transition: 0.3s ease;
-            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;
-        }
+        .btn {
+            width: 100%; padding: 20px; border-radius: 18px;
+            border: none; font-size: 14px; font-weight: 700;
+            cursor: pointer; transition: 0.3s ease;
+            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;
+        }
 
-        #b1 { background: #ffffff; color: #000; box-shadow: 0 5px 20px rgba(0, 210, 255, 0.3); }
-        #b1:hover { background: var(--electric-blue); color: #fff; transform: translateY(-2px); }
+        #b1 { background: #ffffff; color: #000; box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
+        #b1:hover { background: var(--blue); color: #fff; }
 
-        #b2 {
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            cursor: not-allowed;
-        }
+        #b2 {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+        }
 
-        #b2.active {
-            background: #ffffff;
-            color: #000000;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.4);
-        }
-    </style>
+        #b2.active {
+            background: #ffffff;
+            color: #000000;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+    </style>
 </head>
 <body>
-    <div class="ambient-container">
-        <div class="glow-sphere"></div>
-        <div class="glow-sphere-2"></div> 
-    </div>
+    <div class="ambient-container">
+        <div class="glow-sphere"></div>
+        <div class="glow-sphere-2"></div> </div>
 
-    <div class="glass-card">
-        <div class="content-stack">
-            <h1>Secure Portal</h1>
-            <p id="msg">Verification in progress.<br>Redirecting in 4 seconds.</p>
+    <div class="glass-card">
+        <div class="content-stack">
+            <h1>Secure Portal</h1>
+            <p id="msg">Verification in progress.<br>Redirecting in 4 seconds.</p>
 
-            <div class="loader-container" id="lBox">
-                <svg viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="45"></circle>
-                    <circle cx="50" cy="50" r="45" class="progress" id="dot"></circle>
-                </svg>
-            </div>
+            <div class="loader-container" id="lBox">
+                <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45"></circle>
+                    <circle cx="50" cy="50" r="45" class="progress" id="dot"></circle>
+                </svg>
+            </div>
 
-            <button id="b1" class="btn">Start</button>
-            <button id="b2" class="btn" disabled>Continue</button>
-        </div>
-    </div>
+            <button id="b1" class="btn">Start</button>
+            <button id="b2" class="btn" disabled>Continue</button>
+        </div>
+    </div>
 
-    <script>
-        const u = new URLSearchParams(window.location.search);
-        const m = u.get('m');
-        const t = u.get('t') ? atob(u.get('t')) : '#';
-        
-        const b1 = document.getElementById('b1');
-        const b2 = document.getElementById('b2');
-        const lBox = document.getElementById('lBox');
-        const dot = document.getElementById('dot');
-        const msg = document.getElementById('msg');
+    <script>
+        const u = new URLSearchParams(window.location.search);
+        const m = u.get('m');
+        const t = u.get('t') ? atob(u.get('t')) : '#';
+        
+        const b1 = document.getElementById('b1');
+        const b2 = document.getElementById('b2');
+        const lBox = document.getElementById('lBox');
+        const dot = document.getElementById('dot');
+        const msg = document.getElementById('msg');
 
-        b1.onclick = () => {
-            if(m) window.open(m, '_blank');
-            b1.style.display = 'none';
-            lBox.style.display = 'block';
-            msg.innerHTML = "Processing request...<br>Please wait.";
+        b1.onclick = () => {
+            if(m) window.open(m, '_blank');
+            b1.style.display = 'none';
+            lBox.style.display = 'block';
+            msg.innerHTML = "Processing request...<br>Please wait.";
 
-            let time = 0;
-            const limit = 4000;
-            const dash = 282.7;
+            let time = 0;
+            const limit = 4000;
+            const dash = 282.7;
 
-            const timer = setInterval(() => {
-                time += 50;
-                let offset = dash - (time / limit) * dash;
-                dot.style.strokeDashoffset = offset;
+            const timer = setInterval(() => {
+                time += 50;
+                let offset = dash - (time / limit) * dash;
+                dot.style.strokeDashoffset = offset;
 
-                if (time >= limit) {
-                    clearInterval(timer);
-                    lBox.style.display = 'none';
-                    b2.disabled = false;
-                    b2.classList.add('active');
-                    msg.innerHTML = "Success ✅";
-                }
-            }, 50);
-        };
+                if (time >= limit) {
+                    clearInterval(timer);
+                    lBox.style.display = 'none';
+                    b2.disabled = false;
+                    b2.classList.add('active');
+                    msg.innerHTML = "Success ✅";
+                }
+            }, 50);
+        };
 
-        b2.onclick = () => { if(!b2.disabled) window.location.href = t; };
-    </script>
+        b2.onclick = () => { if(!b2.disabled) window.location.href = t; };
+    </script>
 </body>
 </html>
+
+keep everything same, exept, make the backgorund more light blue and blue vibe. this is too dark
