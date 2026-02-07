@@ -52,27 +52,28 @@
             overflow: hidden;
         }
 
-        /* 🌠 FALLING STAR LASERS */
-        .laser-container {
-            position: absolute; inset: 0; pointer-events: none; z-index: 1;
-        }
-        .star {
+        /* ☄️ THE COMET (Glowing line with tail on edges) */
+        .comet-container {
             position: absolute;
-            width: 2px; height: 80px;
-            background: linear-gradient(to bottom, var(--light-blue), transparent);
-            opacity: 0;
-            transform: rotate(35deg);
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
         }
-        .s1 { top: -100px; left: 20%; animation: fall 4s infinite 0s; }
-        .s2 { top: -100px; left: 50%; animation: fall 4s infinite 1.5s; }
-        .s3 { top: -100px; left: 80%; animation: fall 4s infinite 0.8s; }
-        .s4 { top: -100px; left: 10%; animation: fall 4s infinite 2.5s; }
-
-        @keyframes fall {
-            0% { transform: translateY(0) rotate(35deg); opacity: 0; }
-            10% { opacity: 0.4; }
-            90% { opacity: 0.4; }
-            100% { transform: translateY(600px) rotate(35deg); opacity: 0; }
+        .comet-svg {
+            width: 100%;
+            height: 100%;
+        }
+        .comet-path {
+            fill: none;
+            stroke: url(#comet-grad);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 100, 1000; /* Tail length */
+            animation: cometRun 3s linear infinite;
+        }
+        @keyframes cometRun {
+            0% { stroke-dashoffset: 1100; }
+            100% { stroke-dashoffset: 0; }
         }
 
         .content-stack { position: relative; z-index: 10; width: 100%; }
@@ -80,7 +81,7 @@
         h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1.2px; }
         p { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 35px; line-height: 1.6; }
 
-        /* CIRCLE COUNTDOWN (Restored) */
+        /* CIRCLE COUNTDOWN */
         .loader-container { position: relative; width: 110px; height: 110px; margin: 0 auto 35px; display: none; }
         svg.loader { transform: rotate(-90deg); width: 110px; height: 110px; overflow: visible; }
         circle.loader-bg { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.05); }
@@ -99,36 +100,34 @@
             margin-bottom: 18px; text-transform: uppercase; letter-spacing: 1.5px;
         }
 
-        #b1 {
-            background: #ffffff; color: #000;
-            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.1);
-        }
+        #b1 { background: #ffffff; color: #000; }
 
-        /* 💎 TRANSPARENT GLOWING BUTTON */
+        /* 💎 BLUE TRANSPARENT GLASS BUTTON */
         #b2 {
-            background: transparent;
+            background: rgba(0, 210, 255, 0.05); /* Very light blue tint */
             color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.1);
             cursor: not-allowed;
+            backdrop-filter: blur(10px);
         }
 
         #b2.active {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 180, 255, 0.25); /* Stronger blue, still transparent */
             color: #fff;
             cursor: pointer;
             border: 1px solid rgba(166, 240, 255, 0.6);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            /* Light Blue Glow */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            /* Specular rim + blue glow */
             box-shadow: 
-                0 0 20px rgba(0, 210, 255, 0.4),
-                inset 0 0 10px rgba(0, 210, 255, 0.2);
-            animation: pulseGlow 2s infinite alternate;
+                0 0 25px rgba(0, 210, 255, 0.5),
+                inset 0 2px 0px rgba(255, 255, 255, 0.5);
+            animation: pulseBlue 2s infinite alternate;
         }
 
-        @keyframes pulseGlow {
-            from { box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); }
-            to { box-shadow: 0 0 30px rgba(0, 210, 255, 0.6); }
+        @keyframes pulseBlue {
+            from { box-shadow: 0 0 15px rgba(0, 210, 255, 0.4); }
+            to { box-shadow: 0 0 35px rgba(0, 210, 255, 0.8); }
         }
     </style>
 </head>
@@ -138,11 +137,16 @@
     </div>
 
     <div class="glass-card">
-        <div class="laser-container">
-            <div class="star s1"></div>
-            <div class="star s2"></div>
-            <div class="star s3"></div>
-            <div class="star s4"></div>
+        <div class="comet-container">
+            <svg class="comet-svg">
+                <defs>
+                    <linearGradient id="comet-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:transparent; stop-opacity:0" />
+                        <stop offset="100%" style="stop-color:var(--light-blue); stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect x="1.5" y="1.5" rx="38.5" ry="38.5" width="calc(100% - 3px)" height="calc(100% - 3px)" class="comet-path" />
+            </svg>
         </div>
 
         <div class="content-stack">
