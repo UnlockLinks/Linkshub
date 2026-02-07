@@ -13,14 +13,14 @@
             --glass-border: rgba(255, 255, 255, 0.2);
         }
 
-        /* FIX: Prevents the top line by ensuring the base paint matches the start of the gradient */
         html {
             background-color: #010a1a;
         }
 
         body {
             margin: 0; padding: 0;
-            background: linear-gradient(135deg, #010a1a 0%, #001a3d 100%);
+            /* UPDATED: More vibrant blue gradient background */
+            background: radial-gradient(circle at center, #001a3d 0%, #010a1a 100%);
             font-family: 'Inter', -apple-system, sans-serif;
             color: white;
             width: 100vw; height: 100vh;
@@ -33,25 +33,38 @@
             overflow: hidden; z-index: -1;
         }
 
+        /* FIRST GLOW: Primary Blue */
         .glow-sphere {
             position: absolute; 
-            width: 900px; height: 900px; /* Slightly larger for better coverage */
-            background: radial-gradient(circle, rgba(0, 69, 255, 0.3) 0%, rgba(0, 210, 255, 0.1) 50%, transparent 70%);
+            width: 900px; height: 900px; 
+            background: radial-gradient(circle, rgba(0, 69, 255, 0.4) 0%, rgba(0, 210, 255, 0.15) 50%, transparent 70%);
             filter: blur(80px); border-radius: 50%;
-            
-            /* FIX: Shifted higher and further left to eliminate edge-gaps */
             top: -15%; left: -15%;
-            
             animation: drift 20s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        /* NEW: SECOND GLOW: Light Cyan/Blue for more color coverage */
+        .glow-sphere-2 {
+            position: absolute; 
+            width: 700px; height: 700px; 
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.25) 0%, transparent 60%);
+            filter: blur(100px); border-radius: 50%;
+            bottom: -10%; right: -10%;
+            animation: drift-reverse 25s infinite alternate ease-in-out;
             pointer-events: none;
         }
 
         @keyframes drift { 
             from { transform: translate(0, 0); } 
-            to { transform: translate(5%, 5%); } 
+            to { transform: translate(10%, 10%); } 
         }
 
-        /* 🏛️ CLEAN GLASS CARD */
+        @keyframes drift-reverse { 
+            from { transform: translate(0, 0); } 
+            to { transform: translate(-10%, -10%); } 
+        }
+
         .glass-card {
             position: relative;
             background: var(--glass);
@@ -63,14 +76,15 @@
             text-align: center;
             width: 82%; max-width: 340px;
             min-height: 380px;
-            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6), 
+                        inset 0 0 20px rgba(0, 210, 255, 0.1); /* Subtle inner blue glow */
             display: flex; flex-direction: column; justify-content: center;
         }
 
         .content-stack { position: relative; z-index: 10; width: 100%; }
 
         h1 { font-size: 1.8rem; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.5px; }
-        p { font-size: 14px; color: rgba(255, 255, 255, 0.5); margin-bottom: 35px; line-height: 1.6; }
+        p { font-size: 14px; color: rgba(255, 255, 255, 0.6); margin-bottom: 35px; line-height: 1.6; }
 
         .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 30px; display: none; }
         svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
@@ -87,7 +101,8 @@
             margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;
         }
 
-        #b1 { background: #ffffff; color: #000; }
+        #b1 { background: #ffffff; color: #000; box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
+        #b1:hover { background: var(--blue); color: #fff; }
 
         #b2 {
             background: rgba(255, 255, 255, 0.05);
@@ -108,7 +123,7 @@
 <body>
     <div class="ambient-container">
         <div class="glow-sphere"></div>
-    </div>
+        <div class="glow-sphere-2"></div> </div>
 
     <div class="glass-card">
         <div class="content-stack">
