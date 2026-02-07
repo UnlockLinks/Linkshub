@@ -6,10 +6,12 @@
     <title>Cloud Portal</title>
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --blue: #00f2fe;
-            --purple: #7000ff;
+            /* Your Preferred Color Combination */
+            --glass: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --blue: #00d2ff;
+            --light-blue: #3a7bd5;
+            --purple: #9d50bb;
             --font: 'Inter', -apple-system, system-ui, sans-serif;
         }
 
@@ -23,7 +25,6 @@
             position: relative;
         }
 
-        /* Perfectly Centered Wrapper */
         .wrapper {
             position: absolute;
             top: 50%; left: 50%;
@@ -32,26 +33,25 @@
             z-index: 10;
         }
 
-        /* Animated Aesthetic Blobs */
+        /* Ambient Animated Blobs */
         .blob {
-            position: absolute; width: 400px; height: 400px;
+            position: absolute; width: 450px; height: 450px;
             background: radial-gradient(circle, var(--blue), transparent 70%);
-            filter: blur(80px); border-radius: 50%; z-index: 1;
-            opacity: 0.25; animation: move 15s infinite alternate;
-            top: -100px; left: -100px;
+            filter: blur(90px); border-radius: 50%; z-index: 1;
+            opacity: 0.3; animation: move 15s infinite alternate;
+            top: -150px; left: -150px;
         }
         .blob-2 {
-            bottom: -150px; right: -100px; width: 350px; height: 350px;
+            bottom: -150px; right: -100px; width: 400px; height: 400px;
             background: radial-gradient(circle, var(--purple), transparent 70%);
-            filter: blur(80px); opacity: 0.2; animation: move 12s infinite alternate-reverse;
+            filter: blur(90px); opacity: 0.25; animation: move 12s infinite alternate-reverse;
         }
         @keyframes move { from { transform: translate(0,0); } to { transform: translate(60px, 80px); } }
 
-        /* The Professional Glass Card */
         .glass-card {
             background: var(--glass);
-            backdrop-filter: blur(35px);
-            -webkit-backdrop-filter: blur(35px);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
             border: 1px solid var(--glass-border);
             border-radius: 40px;
             padding: 50px 30px;
@@ -61,40 +61,10 @@
             overflow: hidden;
         }
 
-        /* Shimmer Shine Effect */
-        .glass-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -150%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-            transform: skewX(-20deg);
-            animation: shine 6s infinite;
-        }
-        @keyframes shine {
-            0% { left: -150%; }
-            20% { left: 150%; }
-            100% { left: 150%; }
-        }
-
-        .icon-circle {
-            width: 70px; height: 70px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px; margin: 0 auto 30px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 28px;
-            animation: pulse 3s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(0,242,254,0); }
-            50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(0,242,254,0.1); }
-        }
-
         h1 { font-size: 1.7rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1px; }
-        p { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 40px; line-height: 1.6; }
+        p { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 40px; }
 
-        /* CIRCLE FIX: Progress Ring */
+        /* CIRCLE PROGRESS */
         .loader-container {
             position: relative; width: 100px; height: 100px; margin: 0 auto 35px; display: none;
         }
@@ -109,9 +79,9 @@
             filter: drop-shadow(0 0 10px var(--blue));
         }
 
-        /* Premium Buttons */
+        /* BUTTONS */
         .btn {
-            width: 100%; padding: 22px; border-radius: 20px;
+            width: 100%; padding: 22px; border-radius: 24px;
             border: none; font-size: 14px; font-weight: 700;
             cursor: pointer; transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
             margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px;
@@ -119,18 +89,37 @@
 
         #b1 {
             background: #ffffff; color: #000;
-            box-shadow: 0 15px 35px rgba(255,255,255,0.15);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.1);
         }
-        #b1:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(255,255,255,0.25); }
 
+        /* THE GLASSY CONTINUE BUTTON */
         #b2 {
-            background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.2);
-            border: 1px solid var(--glass-border); cursor: not-allowed;
+            background: rgba(255, 255, 255, 0.02);
+            color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: not-allowed;
+            backdrop-filter: blur(10px);
         }
+
         #b2.active {
-            background: linear-gradient(135deg, var(--blue), var(--purple));
-            color: white; cursor: pointer; border: none;
-            box-shadow: 0 20px 40px rgba(112, 0, 255, 0.4);
+            /* Deep Glassy Purple with Inner Shine */
+            background: linear-gradient(135deg, rgba(157, 80, 187, 0.4), rgba(58, 123, 213, 0.4));
+            color: white;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 
+                0 15px 35px rgba(157, 80, 187, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.4),
+                inset 0 -1px 20px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        #b2.active:hover {
+            transform: translateY(-3px) scale(1.02);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px rgba(157, 80, 187, 0.5);
         }
     </style>
 </head>
@@ -140,9 +129,8 @@
 
     <div class="wrapper">
         <div class="glass-card">
-            <div class="icon-circle">⚡</div>
-            <h1>Premium Link</h1>
-            <p id="msg">Verifying secure connection. Please stay on the page.</p>
+            <h1>Link Ready</h1>
+            <p id="msg">Verify your session to access the destination</p>
 
             <div class="loader-container" id="lBox">
                 <svg viewBox="0 0 100 100">
@@ -151,7 +139,7 @@
                 </svg>
             </div>
 
-            <button id="b1" class="btn">Verify Access</button>
+            <button id="b1" class="btn">Verify Identity</button>
             <button id="b2" class="btn" disabled>Continue</button>
         </div>
     </div>
@@ -171,11 +159,11 @@
             window.open(m, '_blank');
             b1.style.display = 'none';
             lBox.style.display = 'block';
-            msg.innerText = "Synchronizing neural link...";
+            msg.innerText = "Processing security layers...";
 
             let time = 0;
             const limit = 4000;
-            const dash = 251.2; // 2 * PI * R (40)
+            const dash = 251.2;
 
             const timer = setInterval(() => {
                 time += 50;
@@ -187,7 +175,7 @@
                     lBox.style.display = 'none';
                     b2.disabled = false;
                     b2.classList.add('active');
-                    msg.innerText = "Connection Established ✅";
+                    msg.innerText = "Verified Successfully ✅";
                 }
             }, 50);
         };
