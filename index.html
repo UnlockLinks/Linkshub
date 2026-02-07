@@ -6,11 +6,11 @@
     <title>Secure Network Portal</title>
     <style>
         :root {
-            --bg: #01040a;
+            --bg: #02050e;
             --blue: #00d2ff;
             --light-blue: #a6f0ff;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass: rgba(255, 255, 255, 0.07);
+            --glass-border: rgba(255, 255, 255, 0.3);
         }
 
         body {
@@ -23,60 +23,55 @@
             display: flex; align-items: center; justify-content: center;
         }
 
+        /* 🌌 BACKGROUND ATMOSPHERE */
         .ambient-container {
             position: absolute; width: 100%; height: 100%;
             overflow: hidden; z-index: -1;
         }
         .blob {
             position: absolute; width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.25), transparent 70%);
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.4), transparent 70%);
             filter: blur(80px); border-radius: 50%;
             animation: move 12s infinite alternate;
         }
         @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(15%, 15%); } }
 
-        /* 🏛️ GLASS CARD */
+        /* 🏛️ COMPACT GLASS CARD */
         .glass-card {
             position: relative;
             background: var(--glass);
-            backdrop-filter: blur(35px);
-            -webkit-backdrop-filter: blur(35px);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--glass-border);
             border-radius: 40px;
             padding: 45px 30px;
             text-align: center;
             width: 82%; max-width: 340px;
             min-height: 380px;
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.9);
-            display: flex; flex-direction: column; justify-content: center;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
             overflow: hidden;
+            display: flex; flex-direction: column; justify-content: center;
         }
 
-        /* ⚡ ILLUMINATING SCANNER */
-        .scanner-wrap {
-            position: absolute; inset: 0;
+        /* ⚡ THE SINGLE SCANNER (Z-index 1: Under text) */
+        .laser-wrap {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 1;
         }
         .scan-line {
             position: absolute;
-            width: 200%; height: 100px;
-            /* The "Glow" behind the line */
-            background: linear-gradient(to bottom, 
-                transparent, 
-                rgba(0, 210, 255, 0.15) 45%, 
-                var(--light-blue) 50%, 
-                rgba(0, 210, 255, 0.15) 55%, 
-                transparent);
-            left: -50%;
-            transform: rotate(-20deg);
-            animation: sweep 3.5s ease-in-out infinite;
-            filter: blur(5px);
+            width: 250%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--light-blue), transparent);
+            transform: rotate(-25deg);
+            left: -75%;
+            opacity: 0;
+            animation: fastScan 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
-        @keyframes sweep {
+        @keyframes fastScan {
             0% { top: -40%; opacity: 0; }
-            30% { opacity: 1; }
-            70% { opacity: 1; }
-            100% { top: 120%; opacity: 0; }
+            20% { opacity: 0.5; }
+            80% { opacity: 0.5; }
+            100% { top: 140%; opacity: 0; }
         }
 
         .content-stack { position: relative; z-index: 10; width: 100%; }
@@ -84,59 +79,61 @@
         h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1.2px; }
         p { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 35px; line-height: 1.6; }
 
-        /* CIRCLE COUNTDOWN */
-        .loader-container { position: relative; width: 110px; height: 110px; margin: 0 auto 35px; display: none; }
-        svg.loader { transform: rotate(-90deg); width: 110px; height: 110px; overflow: visible; }
-        circle.loader-bg { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.05); }
+        .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 30px; display: none; }
+        svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
+        circle { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.05); }
         .progress {
             stroke: var(--blue); stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
             transition: stroke-dashoffset 0.1s linear;
-            filter: drop-shadow(0 0 15px var(--blue));
-            stroke-width: 7;
-            stroke-linecap: round;
+            filter: drop-shadow(0 0 12px var(--blue));
         }
 
         .btn {
-            width: 100%; padding: 22px; border-radius: 22px;
+            width: 100%; padding: 20px; border-radius: 20px;
             border: none; font-size: 15px; font-weight: 700;
             cursor: pointer; transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-            margin-bottom: 18px; text-transform: uppercase; letter-spacing: 1.5px;
+            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px;
         }
 
-        #b1 { background: #ffffff; color: #000; }
+        #b1 {
+            background: #ffffff; color: #000;
+            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.2);
+        }
 
-        /* 💎 ULTRA-GLASSY BUTTON */
+        /* 💎 THE HYPER-GLOSS CRYSTAL BUTTON (RE-ENGINEERED) */
         #b2 {
-            background: rgba(0, 0, 0, 0.4);
+            background: transparent;
             color: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.05);
             cursor: not-allowed;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(5px);
         }
 
         #b2.active {
-            background: rgba(255, 255, 255, 0.08); /* Transparent & Visible */
+            background: rgba(255, 255, 255, 0.05); /* Pure transparent mode */
             color: #fff;
             cursor: pointer;
-            border: 1.5px solid rgba(0, 210, 255, 0.8);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            /* Specular Reflection + Neon Glow */
+            /* Sharp, high-contrast light blue border */
+            border: 1.5px solid rgba(166, 240, 255, 0.8);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            /* SPECULAR RIM EFFECT: This kills the gray and adds the "Glass" edge */
             box-shadow: 
-                0 15px 35px rgba(0, 0, 0, 0.6),
-                inset 0 2px 0px rgba(255, 255, 255, 0.95), /* Glass Top Rim */
-                inset 0 0 20px rgba(0, 210, 255, 0.3);
-            animation: hyperGlassGlow 2s infinite alternate;
+                0 20px 40px rgba(0, 0, 0, 0.5),
+                inset 0 2px 0px 0px rgba(255, 255, 255, 0.95), /* Sharp top highlight */
+                inset 0 0 20px rgba(0, 210, 255, 0.2);          /* Inner blue glow */
+            animation: hyperGlow 2.5s infinite ease-in-out;
         }
 
-        @keyframes hyperGlassGlow {
-            from { 
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 2px 0px rgba(255, 255, 255, 0.7), 0 0 10px rgba(0, 210, 255, 0.3);
-                transform: translateY(0);
+        @keyframes hyperGlow {
+            0%, 100% { 
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 2px 0px 0px rgba(255, 255, 255, 0.8), 0 0 15px rgba(0, 210, 255, 0.4);
+                border-color: rgba(166, 240, 255, 0.5);
             }
-            to { 
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 2px 0px rgba(255, 255, 255, 1), 0 0 35px rgba(0, 210, 255, 0.7);
-                transform: translateY(-2px); /* Slight hover lift */
+            50% { 
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 2.5px 0px 0px rgba(255, 255, 255, 1), 0 0 40px rgba(0, 210, 255, 0.9);
+                border-color: rgba(166, 240, 255, 1);
+                background: rgba(255, 255, 255, 0.12);
             }
         }
     </style>
@@ -147,17 +144,17 @@
     </div>
 
     <div class="glass-card">
-        <div class="scanner-wrap">
+        <div class="laser-wrap">
             <div class="scan-line"></div>
         </div>
-
+        
         <div class="content-stack">
             <h1>System Link</h1>
             <p id="msg">Verifying security certificates...<br>Link unlocks in 4 seconds.</p>
 
             <div class="loader-container" id="lBox">
-                <svg class="loader" viewBox="0 0 100 100">
-                    <circle class="loader-bg" cx="50" cy="50" r="45"></circle>
+                <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45"></circle>
                     <circle cx="50" cy="50" r="45" class="progress" id="dot"></circle>
                 </svg>
             </div>
