@@ -10,7 +10,7 @@
             --blue: #00d2ff;
             --light-blue: #a6f0ff;
             --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.2);
         }
 
         body {
@@ -35,7 +35,7 @@
         }
         @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(15%, 15%); } }
 
-        /* 🏛️ THE MIDDLE PART (CARD) */
+        /* 🏛️ GLASS CARD */
         .glass-card {
             position: relative;
             background: var(--glass);
@@ -49,32 +49,34 @@
             min-height: 380px;
             box-shadow: 0 40px 80px rgba(0, 0, 0, 0.9);
             display: flex; flex-direction: column; justify-content: center;
-            overflow: visible; /* Let the glow breathe */
+            overflow: hidden;
         }
 
-        /* ☄️ THE BIG BEAM (Outer Edge Runner) */
-        .beam-wrapper {
+        /* ⚡ ILLUMINATING SCANNER */
+        .scanner-wrap {
+            position: absolute; inset: 0;
+            pointer-events: none; z-index: 1;
+        }
+        .scan-line {
             position: absolute;
-            inset: -2px; /* Sits exactly on the edge */
-            pointer-events: none;
-            z-index: 1;
+            width: 200%; height: 100px;
+            /* The "Glow" behind the line */
+            background: linear-gradient(to bottom, 
+                transparent, 
+                rgba(0, 210, 255, 0.15) 45%, 
+                var(--light-blue) 50%, 
+                rgba(0, 210, 255, 0.15) 55%, 
+                transparent);
+            left: -50%;
+            transform: rotate(-20deg);
+            animation: sweep 3.5s ease-in-out infinite;
+            filter: blur(5px);
         }
-        .beam-svg { width: 100%; height: 100%; overflow: visible; }
-        
-        .beam-path {
-            fill: none;
-            stroke: url(#beam-grad);
-            stroke-width: 5; /* Bigger head */
-            stroke-linecap: round;
-            /* Head + Long Tail */
-            stroke-dasharray: 140, 1000; 
-            animation: beamTravel 2.5s linear infinite;
-            filter: blur(1px) drop-shadow(0 0 10px var(--blue));
-        }
-
-        @keyframes beamTravel {
-            0% { stroke-dashoffset: 1140; }
-            100% { stroke-dashoffset: 0; }
+        @keyframes sweep {
+            0% { top: -40%; opacity: 0; }
+            30% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { top: 120%; opacity: 0; }
         }
 
         .content-stack { position: relative; z-index: 10; width: 100%; }
@@ -103,9 +105,9 @@
 
         #b1 { background: #ffffff; color: #000; }
 
-        /* 🔳 DARK OBSIDIAN GLASS BUTTON */
+        /* 💎 ULTRA-GLASSY BUTTON */
         #b2 {
-            background: rgba(0, 0, 0, 0.4); /* Black background, transparentized */
+            background: rgba(0, 0, 0, 0.4);
             color: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.05);
             cursor: not-allowed;
@@ -113,22 +115,29 @@
         }
 
         #b2.active {
-            background: rgba(0, 0, 0, 0.6); /* Slightly darker, still transparent */
+            background: rgba(255, 255, 255, 0.08); /* Transparent & Visible */
             color: #fff;
             cursor: pointer;
-            border: 1px solid rgba(0, 210, 255, 0.8);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            /* Deep Blue Glow + Specular Rim */
+            border: 1.5px solid rgba(0, 210, 255, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            /* Specular Reflection + Neon Glow */
             box-shadow: 
-                0 0 30px rgba(0, 210, 255, 0.6),
-                inset 0 1.5px 0px rgba(255, 255, 255, 0.4);
-            animation: darkGlow 2s infinite alternate;
+                0 15px 35px rgba(0, 0, 0, 0.6),
+                inset 0 2px 0px rgba(255, 255, 255, 0.95), /* Glass Top Rim */
+                inset 0 0 20px rgba(0, 210, 255, 0.3);
+            animation: hyperGlassGlow 2s infinite alternate;
         }
 
-        @keyframes darkGlow {
-            from { box-shadow: 0 0 20px rgba(0, 210, 255, 0.4), inset 0 1.5px 0px rgba(255, 255, 255, 0.3); }
-            to { box-shadow: 0 0 45px rgba(0, 210, 255, 0.9), inset 0 1.5px 0px rgba(255, 255, 255, 0.6); }
+        @keyframes hyperGlassGlow {
+            from { 
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 2px 0px rgba(255, 255, 255, 0.7), 0 0 10px rgba(0, 210, 255, 0.3);
+                transform: translateY(0);
+            }
+            to { 
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 2px 0px rgba(255, 255, 255, 1), 0 0 35px rgba(0, 210, 255, 0.7);
+                transform: translateY(-2px); /* Slight hover lift */
+            }
         }
     </style>
 </head>
@@ -138,17 +147,8 @@
     </div>
 
     <div class="glass-card">
-        <div class="beam-wrapper">
-            <svg class="beam-svg">
-                <defs>
-                    <linearGradient id="beam-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:transparent; stop-opacity:0" />
-                        <stop offset="30%" style="stop-color:var(--blue); stop-opacity:0.3" />
-                        <stop offset="100%" style="stop-color:var(--light-blue); stop-opacity:1" />
-                    </linearGradient>
-                </defs>
-                <rect x="0" y="0" rx="40" ry="40" width="100%" height="100%" class="beam-path" />
-            </svg>
+        <div class="scanner-wrap">
+            <div class="scan-line"></div>
         </div>
 
         <div class="content-stack">
