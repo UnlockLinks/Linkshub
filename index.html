@@ -3,116 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Secure Portal</title>
+    <title>Cloud Portal</title>
     <style>
         :root {
             --glass: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.12);
             --blue: #00f2fe;
-            --purple: #4facfe;
+            --purple: #7000ff;
             --font: 'Inter', -apple-system, system-ui, sans-serif;
         }
 
-        /* Full-screen background setup */
         body {
             margin: 0; padding: 0;
-            background: #010208;
+            background: #02040a;
             font-family: var(--font);
             color: white;
-            width: 100vw;
-            height: 100vh;
+            width: 100vw; height: 100vh;
             overflow: hidden;
             position: relative;
         }
 
-        /* Centering Layer: This locks the card to the dead-center */
+        /* Perfectly Centered Wrapper */
         .wrapper {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 360px;
+            width: 90%; max-width: 360px;
             z-index: 10;
         }
 
-        /* Dynamic Background Blobs */
+        /* Animated Aesthetic Blobs */
         .blob {
-            position: absolute; width: 350px; height: 350px;
-            background: linear-gradient(135deg, var(--blue), #6c5ce7);
-            filter: blur(90px); border-radius: 50%; z-index: 1;
-            opacity: 0.4;
-            animation: move 12s infinite alternate;
+            position: absolute; width: 400px; height: 400px;
+            background: radial-gradient(circle, var(--blue), transparent 70%);
+            filter: blur(80px); border-radius: 50%; z-index: 1;
+            opacity: 0.25; animation: move 15s infinite alternate;
+            top: -100px; left: -100px;
         }
         .blob-2 {
-            bottom: -50px; right: -50px; width: 300px; height: 300px;
-            background: linear-gradient(135deg, #a29bfe, var(--purple));
-            filter: blur(90px); opacity: 0.3;
-            animation: move 10s infinite alternate-reverse;
+            bottom: -150px; right: -100px; width: 350px; height: 350px;
+            background: radial-gradient(circle, var(--purple), transparent 70%);
+            filter: blur(80px); opacity: 0.2; animation: move 12s infinite alternate-reverse;
         }
-        @keyframes move { from { transform: translate(0,0); } to { transform: translate(40px, 60px); } }
+        @keyframes move { from { transform: translate(0,0); } to { transform: translate(60px, 80px); } }
 
-        /* The Centered Glass Card */
+        /* The Professional Glass Card */
         .glass-card {
             background: var(--glass);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px);
             border: 1px solid var(--glass-border);
-            border-radius: 45px;
-            padding: 45px 30px;
+            border-radius: 40px;
+            padding: 50px 30px;
             text-align: center;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Shimmer Shine Effect */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -150%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            transform: skewX(-20deg);
+            animation: shine 6s infinite;
+        }
+        @keyframes shine {
+            0% { left: -150%; }
+            20% { left: 150%; }
+            100% { left: 150%; }
         }
 
         .icon-circle {
-            width: 65px; height: 65px;
-            background: rgba(255,255,255,0.03);
+            width: 70px; height: 70px;
+            background: rgba(255,255,255,0.05);
             border: 1px solid var(--glass-border);
-            border-radius: 22px; margin: 0 auto 25px;
+            border-radius: 24px; margin: 0 auto 30px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 26px;
+            font-size: 28px;
+            animation: pulse 3s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(0,242,254,0); }
+            50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(0,242,254,0.1); }
         }
 
-        h1 { font-size: 1.6rem; font-weight: 800; margin: 0 0 12px; letter-spacing: -0.8px; }
-        p { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 40px; line-height: 1.6; }
+        h1 { font-size: 1.7rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1px; }
+        p { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 40px; line-height: 1.6; }
 
-        /* Circular Progress Ring */
+        /* CIRCLE FIX: Progress Ring */
         .loader-container {
-            position: relative; width: 85px; height: 85px; margin: 0 auto 35px; display: none;
+            position: relative; width: 100px; height: 100px; margin: 0 auto 35px; display: none;
         }
-        svg { transform: rotate(-90deg); width: 85px; height: 85px; }
+        svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
         circle {
-            fill: none; stroke-width: 7; stroke-linecap: round;
+            fill: none; stroke-width: 6; stroke-linecap: round;
             stroke: rgba(255,255,255,0.05);
         }
         .progress {
-            stroke: var(--blue); stroke-dasharray: 238; stroke-dashoffset: 238;
+            stroke: var(--blue); stroke-dasharray: 251.2; stroke-dashoffset: 251.2;
             transition: stroke-dashoffset 0.1s linear;
-            filter: drop-shadow(0 0 8px var(--blue));
+            filter: drop-shadow(0 0 10px var(--blue));
         }
 
-        /* Pill Buttons */
+        /* Premium Buttons */
         .btn {
-            width: 100%; padding: 20px; border-radius: 50px;
-            border: none; font-size: 15px; font-weight: 700;
-            cursor: pointer; transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;
+            width: 100%; padding: 22px; border-radius: 20px;
+            border: none; font-size: 14px; font-weight: 700;
+            cursor: pointer; transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px;
         }
 
         #b1 {
             background: #ffffff; color: #000;
-            box-shadow: 0 15px 30px rgba(255,255,255,0.15);
+            box-shadow: 0 15px 35px rgba(255,255,255,0.15);
         }
-        #b1:active { transform: scale(0.95); }
+        #b1:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(255,255,255,0.25); }
 
         #b2 {
-            background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.2);
             border: 1px solid var(--glass-border); cursor: not-allowed;
         }
         #b2.active {
             background: linear-gradient(135deg, var(--blue), var(--purple));
             color: white; cursor: pointer; border: none;
-            box-shadow: 0 15px 35px rgba(0, 242, 254, 0.4);
+            box-shadow: 0 20px 40px rgba(112, 0, 255, 0.4);
         }
     </style>
 </head>
@@ -122,18 +140,18 @@
 
     <div class="wrapper">
         <div class="glass-card">
-            <div class="icon-circle">💎</div>
-            <h1>Secure Access</h1>
-            <p id="msg">Verify your session to unlock the premium content</p>
+            <div class="icon-circle">⚡</div>
+            <h1>Premium Link</h1>
+            <p id="msg">Verifying secure connection. Please stay on the page.</p>
 
             <div class="loader-container" id="lBox">
-                <svg>
-                    <circle cx="42.5" cy="42.5" r="38"></circle>
-                    <circle cx="42.5" cy="42.5" r="38" class="progress" id="dot"></circle>
+                <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40"></circle>
+                    <circle cx="50" cy="50" r="40" class="progress" id="dot"></circle>
                 </svg>
             </div>
 
-            <button id="b1" class="btn">Start Verification</button>
+            <button id="b1" class="btn">Verify Access</button>
             <button id="b2" class="btn" disabled>Continue</button>
         </div>
     </div>
@@ -153,11 +171,11 @@
             window.open(m, '_blank');
             b1.style.display = 'none';
             lBox.style.display = 'block';
-            msg.innerText = "Verifying link integrity...";
+            msg.innerText = "Synchronizing neural link...";
 
             let time = 0;
             const limit = 4000;
-            const dash = 238;
+            const dash = 251.2; // 2 * PI * R (40)
 
             const timer = setInterval(() => {
                 time += 50;
@@ -169,7 +187,7 @@
                     lBox.style.display = 'none';
                     b2.disabled = false;
                     b2.classList.add('active');
-                    msg.innerText = "Identity Verified ✅";
+                    msg.innerText = "Connection Established ✅";
                 }
             }, 50);
         };
