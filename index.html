@@ -3,33 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unlock Link</title>
+    <title>Secure Unlock</title>
     <style>
-        body { font-family: -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f4f7f6; }
-        .card { background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 340px; }
-        button { width: 100%; padding: 16px; margin: 10px 0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.2s; }
-        #b1 { background: #007bff; color: white; }
-        #b2 { background: #e0e0e0; color: #999; cursor: not-allowed; }
-        #b2.active { background: #28a745; color: white; cursor: pointer; }
+        :root {
+            --bg: #0a0e17;
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --accent: #9d50bb;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: radial-gradient(circle at top right, #16213e, var(--bg));
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* Ambient Background Glow */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 300px; height: 300px;
+            background: var(--secondary);
+            filter: blur(150px);
+            border-radius: 50%;
+            z-index: -1;
+            top: 20%; left: 10%;
+            opacity: 0.3;
+        }
+
+        .container {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            padding: 40px 30px;
+            border-radius: 24px;
+            text-align: center;
+            width: 85%;
+            max-width: 360px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        h2 {
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            margin: 12px 0;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #b1 {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(58, 123, 213, 0.4);
+        }
+
+        #b1:active { transform: scale(0.96); }
+
+        #b2 {
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.3);
+            border: 1px solid var(--border);
+            cursor: not-allowed;
+        }
+
+        #b2.active {
+            background: linear-gradient(135deg, var(--accent), #6e48aa);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(157, 80, 187, 0.4);
+            border: none;
+        }
+
+        .status-text {
+            font-size: 12px;
+            margin-top: 15px;
+            color: rgba(255,255,255,0.4);
+            font-weight: 300;
+        }
+
+        /* Loading Spinner for the 4s wait */
+        .loader {
+            display: none;
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <div class="card">
-        <button id="b1">1. Click here, come back</button>
-        <button id="b2" disabled>2. Continue</button>
+
+    <div class="container">
+        <h2>SECURE UNLOCK</h2>
+        <div id="loader" class="loader"></div>
+        
+        <button id="b1" class="btn">1. Open Unlock Page</button>
+        <button id="b2" class="btn" disabled>2. Access Link</button>
+        
+        <div id="status" class="status-text">Complete step 1 to continue</div>
     </div>
+
     <script>
-        const p = new URLSearchParams(window.location.search);
-        const m = p.get('m');
-        const t = atob(p.get('t')); 
-        document.getElementById('b1').onclick = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const m = urlParams.get('m');
+        const t = atob(urlParams.get('t'));
+        
+        const b1 = document.getElementById('b1');
+        const b2 = document.getElementById('b2');
+        const status = document.getElementById('status');
+        const loader = document.getElementById('loader');
+
+        let clickTime;
+
+        b1.onclick = () => {
             window.open(m, '_blank');
-            const b2 = document.getElementById('b2');
-            b2.disabled = false;
-            b2.classList.add('active');
+            clickTime = Date.now();
+            b1.innerText = "Processing...";
+            status.innerText = "Wait 4 seconds on that page...";
+            loader.style.display = "block";
+
+            // Check every 1 second if 4 seconds have passed
+            const timer = setInterval(() => {
+                const passed = (Date.now() - clickTime) / 1000;
+                if (passed >= 4) {
+                    clearInterval(timer);
+                    b2.disabled = false;
+                    b2.classList.add('active');
+                    b1.innerText = "Step 1 Complete ✅";
+                    status.innerText = "Verification successful!";
+                    loader.style.display = "none";
+                }
+            }, 1000);
         };
-        document.getElementById('b2').onclick = () => {
-            if(!document.getElementById('b2').disabled) window.location.href = t;
+
+        b2.onclick = () => {
+            if (!b2.disabled) {
+                window.location.href = t;
+            }
         };
     </script>
 </body>
