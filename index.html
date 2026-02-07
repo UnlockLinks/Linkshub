@@ -6,13 +6,12 @@
     <title>Secure Network Portal</title>
     <style>
         :root {
-            --bg: #02060f;
+            --bg: #030816;
             --blue: #00d2ff;
-            --light-blue: #3a7bd5;
             --purple: #9d50bb;
-            /* Lighter, more transparent glass */
-            --glass: rgba(255, 255, 255, 0.06);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            /* Lighter glass for more "air" */
+            --glass: rgba(255, 255, 255, 0.07);
+            --glass-border: rgba(255, 255, 255, 0.25);
         }
 
         body {
@@ -25,62 +24,63 @@
             display: flex; align-items: center; justify-content: center;
         }
 
+        /* Lighter, more vibrant background */
         .ambient-container {
             position: absolute; width: 100%; height: 100%;
             overflow: hidden; z-index: -1;
         }
-        /* Lighter, softer background glows */
         .blob {
-            position: absolute; width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.25), transparent 70%);
-            filter: blur(100px); border-radius: 50%;
-            animation: move 20s infinite alternate;
+            position: absolute; width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.3) 0%, transparent 70%);
+            filter: blur(80px); border-radius: 50%;
+            animation: move 15s infinite alternate;
+            top: -10%; left: -10%;
         }
         .blob-2 {
-            bottom: -100px; right: -100px; width: 500px; height: 500px;
-            background: radial-gradient(circle, rgba(157, 80, 187, 0.2), transparent 70%);
-            filter: blur(100px); animation: move 15s infinite alternate-reverse;
+            bottom: -10%; right: -10%; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(157, 80, 187, 0.25) 0%, transparent 70%);
+            filter: blur(80px); animation: move 12s infinite alternate-reverse;
         }
-        @keyframes move { from { transform: translate(-50px, -50px); } to { transform: translate(100px, 150px); } }
+        @keyframes move { from { transform: translate(0, 0); } to { transform: translate(100px, 50px); } }
 
         .glass-card {
             position: relative;
             background: var(--glass);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--glass-border);
             border-radius: 45px;
-            padding: 50px 35px; /* Slightly reduced padding */
+            padding: 50px 35px;
             text-align: center;
             width: 88%; max-width: 360px;
-            min-height: 440px; /* Lowered length as requested */
-            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+            min-height: 420px; /* Lowered length */
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
             overflow: hidden;
             display: flex; flex-direction: column; justify-content: center;
         }
 
-        /* ⚡ SUBTLE DIAGONAL LASERS (Every bit of middle part) */
-        .scan-line {
-            position: absolute; 
-            top: 0; left: -70%;
-            width: 250%; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--blue), transparent);
-            box-shadow: 0 0 12px var(--blue);
-            z-index: 5; 
-            opacity: 0.25; /* More non-visible/subtle */
-            transform: rotate(35deg); 
+        /* ⚡ REWORKED: THE GHOSTLY SCANNER (Diagonal Array) */
+        .laser-wrap {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
         }
-        
-        /* Spacing them to cover the whole middle area */
-        .line-1 { animation: diagonalScan 5s linear infinite; }
-        .line-2 { animation: diagonalScan 5s linear infinite 1.5s; opacity: 0.15; }
-        .line-3 { animation: diagonalScan 5s linear infinite 3s; opacity: 0.1; }
+        .scan-line {
+            position: absolute;
+            width: 200%; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 210, 255, 0.4), transparent);
+            transform: rotate(-35deg);
+            left: -50%;
+        }
+        /* Spaced to cover the whole middle section */
+        .l1 { animation: sweep 6s linear infinite; }
+        .l2 { animation: sweep 6s linear infinite 2s; }
+        .l3 { animation: sweep 6s linear infinite 4s; }
 
-        @keyframes diagonalScan {
-            0% { transform: translate(-30%, -120%) rotate(35deg); opacity: 0; }
-            20% { opacity: 0.25; }
-            80% { opacity: 0.25; }
-            100% { transform: translate(10%, 250%) rotate(35deg); opacity: 0; }
+        @keyframes sweep {
+            0% { top: -20%; opacity: 0; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            100% { top: 120%; opacity: 0; }
         }
 
         h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1.2px; }
@@ -104,36 +104,34 @@
 
         #b1 {
             background: #ffffff; color: #000;
-            box-shadow: 0 15px 35px rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.1);
         }
 
-        /* SUPER GLASSY CONTINUE BUTTON */
+        /* 💎 HYPER-GLASSY CONTINUE BUTTON */
         #b2 {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.02);
             color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             cursor: not-allowed;
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(10px);
         }
 
         #b2.active {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
-            color: white;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02));
+            color: #fff;
             cursor: pointer;
             border: 1px solid rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
-            /* Reflection effect */
             box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.4),
-                inset 0 1px 1px rgba(255, 255, 255, 0.6),
-                0 0 20px rgba(0, 210, 255, 0.2);
-            animation: crystalPulse 3s infinite;
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                inset 0 1px 2px rgba(255, 255, 255, 0.5);
+            animation: glassGlow 3s infinite ease-in-out;
         }
 
-        @keyframes crystalPulse {
-            0%, 100% { transform: scale(1); border-color: rgba(255, 255, 255, 0.3); }
-            50% { transform: scale(1.01); border-color: rgba(255, 255, 255, 0.6); }
+        @keyframes glassGlow {
+            0%, 100% { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0px rgba(0, 210, 255, 0); }
+            50% { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 210, 255, 0.3); transform: translateY(-1px); }
         }
     </style>
 </head>
@@ -144,9 +142,11 @@
     </div>
 
     <div class="glass-card">
-        <div class="scan-line line-1"></div>
-        <div class="scan-line line-2"></div>
-        <div class="scan-line line-3"></div>
+        <div class="laser-wrap">
+            <div class="scan-line l1"></div>
+            <div class="scan-line l2"></div>
+            <div class="scan-line l3"></div>
+        </div>
         
         <h1>System Link</h1>
         <p id="msg">Verifying security certificates...<br>Link unlocks in 4 seconds.</p>
