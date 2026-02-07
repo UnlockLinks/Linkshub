@@ -53,25 +53,32 @@
             display: flex; flex-direction: column; justify-content: center;
         }
 
-        /* ⚡ THE SINGLE SCANNER (Z-index 1: Under text) */
+        /* ⚡ THE FULL-CARD SCANNER (Extended to sweep bottom) */
         .laser-wrap {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 1;
         }
         .scan-line {
             position: absolute;
-            width: 250%; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--light-blue), transparent);
+            width: 250%; height: 60px; /* Thicker beam for more "glow" */
+            background: linear-gradient(to bottom, 
+                transparent, 
+                rgba(0, 210, 255, 0.2), 
+                var(--light-blue), 
+                rgba(0, 210, 255, 0.2), 
+                transparent);
             transform: rotate(-25deg);
             left: -75%;
             opacity: 0;
-            animation: fastScan 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            /* Sweeps from above top to below the buttons */
+            animation: fullScan 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            filter: blur(4px);
         }
-        @keyframes fastScan {
-            0% { top: -40%; opacity: 0; }
-            20% { opacity: 0.5; }
-            80% { opacity: 0.5; }
-            100% { top: 140%; opacity: 0; }
+        @keyframes fullScan {
+            0% { top: -50%; opacity: 0; }
+            20% { opacity: 0.7; }
+            80% { opacity: 0.7; }
+            100% { top: 130%; opacity: 0; }
         }
 
         .content-stack { position: relative; z-index: 10; width: 100%; }
@@ -100,40 +107,43 @@
             box-shadow: 0 10px 30px rgba(0, 210, 255, 0.2);
         }
 
-        /* 💎 THE HYPER-GLOSS CRYSTAL BUTTON (RE-ENGINEERED) */
+        /* 💎 BLUE TRANSPARENT CRYSTAL BUTTON */
         #b2 {
-            background: transparent;
+            background: rgba(0, 210, 255, 0.05); /* Transparent Blue Start */
             color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 210, 255, 0.1);
             cursor: not-allowed;
             backdrop-filter: blur(5px);
         }
 
         #b2.active {
-            background: rgba(255, 255, 255, 0.05); /* Pure transparent mode */
+            /* Blue + Transparent Mode */
+            background: rgba(0, 150, 255, 0.15); 
             color: #fff;
             cursor: pointer;
-            /* Sharp, high-contrast light blue border */
             border: 1.5px solid rgba(166, 240, 255, 0.8);
             backdrop-filter: blur(40px);
             -webkit-backdrop-filter: blur(40px);
-            /* SPECULAR RIM EFFECT: This kills the gray and adds the "Glass" edge */
+            
+            /* High-End Glow & Gloss */
             box-shadow: 
                 0 20px 40px rgba(0, 0, 0, 0.5),
-                inset 0 2px 0px 0px rgba(255, 255, 255, 0.95), /* Sharp top highlight */
-                inset 0 0 20px rgba(0, 210, 255, 0.2);          /* Inner blue glow */
-            animation: hyperGlow 2.5s infinite ease-in-out;
+                inset 0 2px 0px 0px rgba(255, 255, 255, 0.8), /* Specular Top Edge */
+                0 0 25px rgba(0, 210, 255, 0.5);             /* Light Blue Outer Glow */
+            
+            animation: sapphirePulse 2.5s infinite ease-in-out;
         }
 
-        @keyframes hyperGlow {
+        @keyframes sapphirePulse {
             0%, 100% { 
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 2px 0px 0px rgba(255, 255, 255, 0.8), 0 0 15px rgba(0, 210, 255, 0.4);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 2px 0px 0px rgba(255, 255, 255, 0.6), 0 0 15px rgba(0, 210, 255, 0.3);
                 border-color: rgba(166, 240, 255, 0.5);
+                background: rgba(0, 150, 255, 0.1);
             }
             50% { 
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 2.5px 0px 0px rgba(255, 255, 255, 1), 0 0 40px rgba(0, 210, 255, 0.9);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 2px 0px 0px rgba(255, 255, 255, 1), 0 0 40px rgba(0, 210, 255, 0.8);
                 border-color: rgba(166, 240, 255, 1);
-                background: rgba(255, 255, 255, 0.12);
+                background: rgba(0, 180, 255, 0.25);
             }
         }
     </style>
