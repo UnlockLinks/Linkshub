@@ -1,173 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Secure Network Portal</title>
-  <style>
-    :root {
-      --bg: #020612;
-      --blue: #00d2ff;
-      --light-blue: #a6f0ff;
-      --glass: rgba(255, 255, 255, 0.08);
-      --glass-border: rgba(255, 255, 255, 0.3);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Secure Network Portal</title>
+    <style>
+        :root {
+            --bg: #02050e;
+            --blue: #00d2ff;
+            --light-blue: #a6f0ff;
+            --glass: rgba(255, 255, 255, 0.07);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
 
-    body {
-      margin: 0; padding: 0;
-      background: var(--bg);
-      font-family: 'Inter', -apple-system, sans-serif;
-      color: white;
-      width: 100vw; height: 100vh;
-      overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-    }
+        body {
+            margin: 0; padding: 0;
+            background: var(--bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: white;
+            width: 100vw; height: 100vh;
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
 
-    /* 🌌 ATMOSPHERIC FLUX LINES */
-    .ambient-container {
-      position: absolute; width: 100%; height: 100%;
-      overflow: hidden; z-index: -1;
-    }
-    .flux-line {
-      position: absolute;
-      border: 1px solid rgba(0, 210, 255, 0.2);
-      border-radius: 50%;
-      pointer-events: none;
-      opacity: 0.1;
-      animation: fluxMove 25s infinite linear;
-    }
-    .f1 { width: 900px; height: 500px; top: -10%; left: -20%; }
-    .f2 { width: 700px; height: 800px; bottom: -15%; right: -10%; animation-direction: reverse; animation-duration: 35s; }
-    .f3 { width: 400px; height: 400px; top: 30%; left: 50%; animation-duration: 15s; }
+        /* 🌌 BACKGROUND ATMOSPHERE */
+        .ambient-container {
+            position: absolute; width: 100%; height: 100%;
+            overflow: hidden; z-index: -1;
+        }
+        .blob {
+            position: absolute; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.4), transparent 70%);
+            filter: blur(80px); border-radius: 50%;
+            animation: move 12s infinite alternate;
+        }
+        @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(15%, 15%); } }
 
-    @keyframes fluxMove {
-      0% { transform: rotate(0deg) scale(1); opacity: 0.05; }
-      50% { transform: rotate(180deg) scale(1.1); opacity: 0.2; }
-      100% { transform: rotate(360deg) scale(1); opacity: 0.05; }
-    }
+        /* 🏛️ COMPACT GLASS CARD */
+        .glass-card {
+            position: relative;
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 45px 30px;
+            text-align: center;
+            width: 82%; max-width: 340px;
+            min-height: 380px;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            display: flex; flex-direction: column; justify-content: center;
+        }
 
-    .blob {
-      position: absolute; width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(0, 210, 255, 0.35), transparent 70%);
-      filter: blur(80px); border-radius: 50%;
-      animation: move 12s infinite alternate;
-    }
-    @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(15%, 15%); } }
+        /* ⚡ THE SINGLE SCANNER (Z-index 1: Under text) */
+        .laser-wrap {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
+        }
+        .scan-line {
+            position: absolute;
+            width: 250%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--light-blue), transparent);
+            transform: rotate(-25deg);
+            left: -75%;
+            opacity: 0;
+            animation: fastScan 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        @keyframes fastScan {
+            0% { top: -40%; opacity: 0; }
+            20% { opacity: 0.5; }
+            80% { opacity: 0.5; }
+            100% { top: 140%; opacity: 0; }
+        }
 
-    /* 🔦 SCANNING LASER LINE */
-    .scanner-line {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 2px;
-      background: linear-gradient(to right, transparent, var(--light-blue), transparent);
-      opacity: 0.6;
-      animation: scan 4s infinite linear;
-    }
-    @keyframes scan {
-      0% { top: 0; }
-      100% { top: 100%; }
-    }
+        .content-stack { position: relative; z-index: 10; width: 100%; }
 
-    /* 🏛️ COMPACT GLASS CARD */
-    .glass-card {
-      position: relative;
-      background: var(--glass);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border: 1px solid var(--glass-border);
-      border-radius: 40px;
-      padding: 40px 30px;
-      text-align: center;
-      width: 82%; max-width: 340px;
-      min-height: 380px;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
-      overflow: hidden;
-      display: flex; flex-direction: column; justify-content: center;
-      z-index: 10;
-    }
+        h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1.2px; }
+        p { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 35px; line-height: 1.6; }
 
-    .content-stack { position: relative; z-index: 20; width: 100%; }
+        .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 30px; display: none; }
+        svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
+        circle { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.05); }
+        .progress {
+            stroke: var(--blue); stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
+            transition: stroke-dashoffset 0.1s linear;
+            filter: drop-shadow(0 0 12px var(--blue));
+        }
 
-    h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1.2px; }
-    p { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 35px; line-height: 1.6; }
+        .btn {
+            width: 100%; padding: 20px; border-radius: 20px;
+            border: none; font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px;
+        }
 
-    .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 30px; display: none; }
-    svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
-    circle { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.05); }
-    .progress {
-      stroke: var(--blue); stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
-      transition: stroke-dashoffset 0.1s linear;
-      filter: drop-shadow(0 0 10px var(--blue));
-    }
+        #b1 {
+            background: #ffffff; color: #000;
+            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.2);
+        }
 
-    .btn {
-      width: 100%; padding: 20px; border-radius: 20px;
-      border: none; font-size: 15px; font-weight: 700;
-      cursor: pointer; transition: 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-      margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px;
-    }
+        /* 💎 THE HYPER-GLOSS CRYSTAL BUTTON (RE-ENGINEERED) */
+        #b2 {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: not-allowed;
+            backdrop-filter: blur(5px);
+        }
 
-    #b1 {
-      background: #ffffff; color: #000;
-      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
-    }
+        #b2.active {
+            background: rgba(255, 255, 255, 0.05); /* Pure transparent mode */
+            color: #fff;
+            cursor: pointer;
+            /* Sharp, high-contrast light blue border */
+            border: 1.5px solid rgba(166, 240, 255, 0.8);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            /* SPECULAR RIM EFFECT: This kills the gray and adds the "Glass" edge */
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.5),
+                inset 0 2px 0px 0px rgba(255, 255, 255, 0.95), /* Sharp top highlight */
+                inset 0 0 20px rgba(0, 210, 255, 0.2);          /* Inner blue glow */
+            animation: hyperGlow 2.5s infinite ease-in-out;
+        }
 
-    /* 💎 ENHANCED GLASSY LIGHT-BLUE "CONTINUE" BUTTON */
-    #b2 {
-      background: transparent;
-      color: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      cursor: not-allowed;
-      backdrop-filter: blur(5px);
-    }
-
-    #b2.active {
-      background: rgba(255, 255, 255, 0.05);
-      color: #fff;
-      cursor: pointer;
-      border: 1px solid rgba(166, 240, 255, 0.9);
-      backdrop-filter: blur(40px);
-      -webkit-backdrop-filter: blur(40px);
-      box-shadow: 
-        0 15px 35px rgba(0, 0, 0, 0.5),
-        inset 0 2px 0px rgba(255, 255, 255, 0.9),
-        inset 0 0 25px rgba(166, 240, 255, 0.6),
-        0 0 25px rgba(166, 240, 255, 0.9),
-        0 0 60px rgba(166, 240, 255, 0.7);
-      animation: crystalGlow 2.5s infinite ease-in-out;
-    }
-
-    @keyframes crystalGlow {
-      0%, 100% { 
-        box-shadow: 
-          0 15px 35px rgba(0, 0, 0, 0.5),
-          inset 0 2px 0px rgba(255, 255, 255, 0.8),
-          0 0 20px rgba(166, 240, 255, 0.6),
-          0 0 40px rgba(166, 240, 255, 0.5);
-        border-color: rgba(166, 240, 255, 0.6);
-      }
-      50% { 
-        box-shadow: 
-          0 15px 35px rgba(0, 0, 0, 0.5),
-          inset 0 2px 0px rgba(255, 255, 255, 1),
-          0 0 45px rgba(166, 240, 255, 1),
-          0 0 80px rgba(166, 240, 255, 0.9);
-        border-color: rgba(166, 240, 255, 1);
-        background: rgba(255, 255, 255, 0.08);
-      }
-    }
-  </style>
+        @keyframes hyperGlow {
+            0%, 100% { 
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 2px 0px 0px rgba(255, 255, 255, 0.8), 0 0 15px rgba(0, 210, 255, 0.4);
+                border-color: rgba(166, 240, 255, 0.5);
+            }
+            50% { 
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 2.5px 0px 0px rgba(255, 255, 255, 1), 0 0 40px rgba(0, 210, 255, 0.9);
+                border-color: rgba(166, 240, 255, 1);
+                background: rgba(255, 255, 255, 0.12);
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="ambient-container">
-    <div class="blob"></div>
-    <div class="flux-line f1"></div>
-    <div class="flux-line f2"></div>
-    <div class="flux-line f3"></div>
-    <div class="scanner-line"></div>
-  </div>
+    <div class="ambient-container">
+        <div class="blob"></div>
+    </div>
 
-  <div class="glass-card">
-    <div class="content-stack">
-      <h1>System Link</h1>
-      <p id="msg">Verifying security certificates...<br>
+    <div class="glass-card">
+        <div class="laser-wrap">
+            <div class="scan-line"></div>
+        </div>
+        
+        <div class="content-stack">
+            <h1>System Link</h1>
+            <p id="msg">Verifying security certificates...<br>Link unlocks in 4 seconds.</p>
+
+            <div class="loader-container" id="lBox">
+                <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45"></circle>
+                    <circle cx="50" cy="50" r="45" class="progress" id="dot"></circle>
+                </svg>
+            </div>
+
+            <button id="b1" class="btn">Initiate Verify</button>
+            <button id="b2" class="btn" disabled>Continue Access</button>
+        </div>
+    </div>
+
+    <script>
+        const u = new URLSearchParams(window.location.search);
+        const m = u.get('m');
+        const t = atob(u.get('t'));
+        
+        const b1 = document.getElementById('b1');
+        const b2 = document.getElementById('b2');
+        const lBox = document.getElementById('lBox');
+        const dot = document.getElementById('dot');
+        const msg = document.getElementById('msg');
+
+        b1.onclick = () => {
+            window.open(m, '_blank');
+            b1.style.display = 'none';
+            lBox.style.display = 'block';
+            msg.innerHTML = "Processing neural handshake...<br>Please wait.";
+
+            let time = 0;
+            const limit = 4000;
+            const dash = 282.7;
+
+            const timer = setInterval(() => {
+                time += 50;
+                let offset = dash - (time / limit) * dash;
+                dot.style.strokeDashoffset = offset;
+
+                if (time >= limit) {
+                    clearInterval(timer);
+                    lBox.style.display = 'none';
+                    b2.disabled = false;
+                    b2.classList.add('active');
+                    msg.innerHTML = "Session Authorized ✅";
+                }
+            }, 50);
+        };
+
+        b2.onclick = () => { if(!b2.disabled) window.location.href = t; };
+    </script>
+</body>
+</html>
