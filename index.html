@@ -10,7 +10,7 @@
             --blue: #00d2ff;
             --light-blue: #a6f0ff;
             --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-border: rgba(255, 255, 255, 0.15);
         }
 
         body {
@@ -29,13 +29,13 @@
         }
         .blob {
             position: absolute; width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.3), transparent 70%);
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.25), transparent 70%);
             filter: blur(80px); border-radius: 50%;
             animation: move 12s infinite alternate;
         }
         @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(15%, 15%); } }
 
-        /* 🏛️ GLASS CARD WITH EDGE SCANNER */
+        /* 🏛️ GLASS CARD */
         .glass-card {
             position: relative;
             background: var(--glass);
@@ -49,25 +49,37 @@
             min-height: 380px;
             box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8);
             display: flex; flex-direction: column; justify-content: center;
+            overflow: hidden;
         }
 
-        /* ⚡ EDGE RUNNER LINE (Circular Path) */
-        .glass-card::before {
-            content: '';
+        /* ⚡ THE BEAM (Moving along the edges) */
+        .beam-container {
             position: absolute;
-            inset: -2px; /* Moves exactly on the border */
+            inset: 0;
             border-radius: 40px;
-            padding: 2px; /* Line thickness */
-            background: conic-gradient(from 0deg, transparent 70%, var(--light-blue), transparent 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            animation: borderRotate 3s linear infinite;
             pointer-events: none;
+            z-index: 1;
         }
 
-        @keyframes borderRotate {
-            100% { transform: rotate(360deg); }
+        .beam-svg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            fill: none;
+        }
+
+        .beam-path {
+            stroke: var(--light-blue);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 80, 400; /* Beam length */
+            filter: drop-shadow(0 0 8px var(--blue));
+            animation: beamRun 3s linear infinite;
+        }
+
+        @keyframes beamRun {
+            0% { stroke-dashoffset: 480; }
+            100% { stroke-dashoffset: 0; }
         }
 
         .content-stack { position: relative; z-index: 10; width: 100%; }
@@ -76,8 +88,8 @@
         p { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 35px; line-height: 1.6; }
 
         .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 30px; display: none; }
-        svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
-        circle { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.05); }
+        svg.loader { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
+        circle.loader-bg { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.05); }
         .progress {
             stroke: var(--blue); stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
             transition: stroke-dashoffset 0.1s linear;
@@ -87,48 +99,26 @@
         .btn {
             width: 100%; padding: 20px; border-radius: 20px;
             border: none; font-size: 15px; font-weight: 700;
-            cursor: pointer; transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            cursor: pointer; transition: 0.2s ease;
             margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px;
         }
 
         #b1 {
             background: #ffffff; color: #000;
-            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.1);
         }
 
-        /* 💎 THE PURE CRYSTAL SLAB BUTTON (Zero Gray) */
+        /* 🔳 THE PLANE BUTTON (Wiped Clean) */
         #b2 {
-            background: transparent;
-            color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             cursor: not-allowed;
-            backdrop-filter: blur(2px);
         }
 
         #b2.active {
-            background: rgba(255, 255, 255, 0.02); /* Ghostly transparency */
-            color: #fff;
+            background: #ffffff;
+            color: #000;
             cursor: pointer;
-            /* High-def glass edges */
-            border: 1px solid rgba(166, 240, 255, 0.7);
-            backdrop-filter: blur(45px);
-            -webkit-backdrop-filter: blur(45px);
-            /* SPECULAR RIM: The sharp white glass highlight */
-            box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.6),
-                inset 0 2px 0px rgba(255, 255, 255, 0.95), /* Sharp white top rim */
-                inset 0 0 15px rgba(0, 210, 255, 0.3);      /* Inner neon pulse */
-            animation: iceGlow 2.5s infinite ease-in-out;
-        }
-
-        @keyframes iceGlow {
-            0%, 100% { 
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 2px 0px rgba(255, 255, 255, 0.8), 0 0 10px rgba(0, 210, 255, 0.4);
-            }
-            50% { 
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 2px 0px rgba(255, 255, 255, 1), 0 0 35px rgba(0, 210, 255, 0.7);
-                border-color: rgba(166, 240, 255, 1);
-            }
         }
     </style>
 </head>
@@ -138,13 +128,19 @@
     </div>
 
     <div class="glass-card">
+        <div class="beam-container">
+            <svg class="beam-svg">
+                <rect x="1.5" y="1.5" rx="38.5" ry="38.5" width="calc(100% - 3px)" height="calc(100% - 3px)" class="beam-path" />
+            </svg>
+        </div>
+
         <div class="content-stack">
             <h1>System Link</h1>
             <p id="msg">Verifying security certificates...<br>Link unlocks in 4 seconds.</p>
 
             <div class="loader-container" id="lBox">
-                <svg viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="45"></circle>
+                <svg class="loader" viewBox="0 0 100 100">
+                    <circle class="loader-bg" cx="50" cy="50" r="45"></circle>
                     <circle cx="50" cy="50" r="45" class="progress" id="dot"></circle>
                 </svg>
             </div>
