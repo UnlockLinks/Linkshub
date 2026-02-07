@@ -6,11 +6,11 @@
     <title>Secure Network Portal</title>
     <style>
         :root {
-            --bg: #02050e;
+            --bg: #01040a;
             --blue: #00d2ff;
             --light-blue: #a6f0ff;
-            --glass: rgba(255, 255, 255, 0.07);
-            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.2);
         }
 
         body {
@@ -23,20 +23,19 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* 🌌 BACKGROUND ATMOSPHERE */
         .ambient-container {
             position: absolute; width: 100%; height: 100%;
             overflow: hidden; z-index: -1;
         }
         .blob {
             position: absolute; width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.4), transparent 70%);
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.3), transparent 70%);
             filter: blur(80px); border-radius: 50%;
             animation: move 12s infinite alternate;
         }
         @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(15%, 15%); } }
 
-        /* 🏛️ COMPACT GLASS CARD */
+        /* 🏛️ GLASS CARD WITH EDGE SCANNER */
         .glass-card {
             position: relative;
             background: var(--glass);
@@ -48,30 +47,27 @@
             text-align: center;
             width: 82%; max-width: 340px;
             min-height: 380px;
-            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
-            overflow: hidden;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8);
             display: flex; flex-direction: column; justify-content: center;
         }
 
-        /* ⚡ THE SINGLE SCANNER (Z-index 1: Under text) */
-        .laser-wrap {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 1;
-        }
-        .scan-line {
+        /* ⚡ EDGE RUNNER LINE (Circular Path) */
+        .glass-card::before {
+            content: '';
             position: absolute;
-            width: 250%; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--light-blue), transparent);
-            transform: rotate(-25deg);
-            left: -75%;
-            opacity: 0;
-            animation: fastScan 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            inset: -2px; /* Moves exactly on the border */
+            border-radius: 40px;
+            padding: 2px; /* Line thickness */
+            background: conic-gradient(from 0deg, transparent 70%, var(--light-blue), transparent 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: borderRotate 3s linear infinite;
+            pointer-events: none;
         }
-        @keyframes fastScan {
-            0% { top: -40%; opacity: 0; }
-            20% { opacity: 0.5; }
-            80% { opacity: 0.5; }
-            100% { top: 140%; opacity: 0; }
+
+        @keyframes borderRotate {
+            100% { transform: rotate(360deg); }
         }
 
         .content-stack { position: relative; z-index: 10; width: 100%; }
@@ -97,43 +93,41 @@
 
         #b1 {
             background: #ffffff; color: #000;
-            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.1);
         }
 
-        /* 💎 THE HYPER-GLOSS CRYSTAL BUTTON (RE-ENGINEERED) */
+        /* 💎 THE PURE CRYSTAL SLAB BUTTON (Zero Gray) */
         #b2 {
             background: transparent;
             color: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.05);
             cursor: not-allowed;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(2px);
         }
 
         #b2.active {
-            background: rgba(255, 255, 255, 0.05); /* Pure transparent mode */
+            background: rgba(255, 255, 255, 0.02); /* Ghostly transparency */
             color: #fff;
             cursor: pointer;
-            /* Sharp, high-contrast light blue border */
-            border: 1.5px solid rgba(166, 240, 255, 0.8);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            /* SPECULAR RIM EFFECT: This kills the gray and adds the "Glass" edge */
+            /* High-def glass edges */
+            border: 1px solid rgba(166, 240, 255, 0.7);
+            backdrop-filter: blur(45px);
+            -webkit-backdrop-filter: blur(45px);
+            /* SPECULAR RIM: The sharp white glass highlight */
             box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.5),
-                inset 0 2px 0px 0px rgba(255, 255, 255, 0.95), /* Sharp top highlight */
-                inset 0 0 20px rgba(0, 210, 255, 0.2);          /* Inner blue glow */
-            animation: hyperGlow 2.5s infinite ease-in-out;
+                0 20px 40px rgba(0, 0, 0, 0.6),
+                inset 0 2px 0px rgba(255, 255, 255, 0.95), /* Sharp white top rim */
+                inset 0 0 15px rgba(0, 210, 255, 0.3);      /* Inner neon pulse */
+            animation: iceGlow 2.5s infinite ease-in-out;
         }
 
-        @keyframes hyperGlow {
+        @keyframes iceGlow {
             0%, 100% { 
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 2px 0px 0px rgba(255, 255, 255, 0.8), 0 0 15px rgba(0, 210, 255, 0.4);
-                border-color: rgba(166, 240, 255, 0.5);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 2px 0px rgba(255, 255, 255, 0.8), 0 0 10px rgba(0, 210, 255, 0.4);
             }
             50% { 
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 2.5px 0px 0px rgba(255, 255, 255, 1), 0 0 40px rgba(0, 210, 255, 0.9);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 2px 0px rgba(255, 255, 255, 1), 0 0 35px rgba(0, 210, 255, 0.7);
                 border-color: rgba(166, 240, 255, 1);
-                background: rgba(255, 255, 255, 0.12);
             }
         }
     </style>
@@ -144,10 +138,6 @@
     </div>
 
     <div class="glass-card">
-        <div class="laser-wrap">
-            <div class="scan-line"></div>
-        </div>
-        
         <div class="content-stack">
             <h1>System Link</h1>
             <p id="msg">Verifying security certificates...<br>Link unlocks in 4 seconds.</p>
