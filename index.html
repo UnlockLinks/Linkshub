@@ -109,10 +109,12 @@
     </div>
 
     <script>
-        const u = new URLSearchParams(window.location.search);
-        const linkId = u.get('id'); 
+        // --- CLEAN LINK LOGIC ---
+        // This looks at the URL and grabs the ID from the end (the part after Linkshub/)
+        const path = window.location.pathname.replace(/\/$/, ""); 
+        const linkId = path.split('/').pop();
         
-        // REPLACE with your actual Firebase URL
+        // This is your Firebase URL
         const DB_URL = "https://unlocklinks-default-rtdb.firebaseio.com/links/";
 
         let m = ""; 
@@ -124,23 +126,25 @@
         const dot = document.getElementById('dot');
         const msg = document.getElementById('msg');
 
-        // Fetch data from Firebase
-        if (linkId) {
+        // Check if the ID is valid (not just the homepage)
+        if (linkId && linkId !== "Linkshub") {
             fetch(`${DB_URL}${linkId}.json`)
                 .then(res => res.json())
                 .then(data => {
                     if (data) {
                         m = data.m;
                         t = data.t;
-                        msg.innerHTML = "Link ready to verify.";
+                        msg.innerHTML = "Link authenticated.";
                     } else {
-                        msg.innerHTML = "Error: Invalid ID.";
+                        msg.innerHTML = "Error: Invalid or Expired ID.";
                         b1.style.display = 'none';
                     }
                 })
-                .catch(() => { msg.innerHTML = "Database Error."; });
+                .catch(() => {
+                    msg.innerHTML = "Database Connection Error.";
+                });
         } else {
-            msg.innerHTML = "Missing ID.";
+            msg.innerHTML = "System Ready. Waiting for ID...";
             b1.style.display = 'none';
         }
 
