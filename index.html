@@ -1,177 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Secure Network Portal</title>
-    <style>
-        :root {
-            --bg: #010a1a;
-            --blue: #00d2ff;
-            --deep-blue: #0045ff;
-            --glass: rgba(255, 255, 255, 0.07);
-            --glass-border: rgba(255, 255, 255, 0.25);
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Secure Network Portal</title>
+    <style>
+        :root {
+            --bg: #010a1a;
+            --blue: #00d2ff;
+            --deep-blue: #0045ff;
+            --glass: rgba(255, 255, 255, 0.07);
+            --glass-border: rgba(255, 255, 255, 0.25);
+        }
 
-        body {
-            margin: 0; padding: 0;
-            background: var(--bg);
-            font-family: 'Inter', -apple-system, sans-serif;
-            color: white;
-            width: 100vw; height: 100vh;
-            overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-        }
+        body {
+            margin: 0; padding: 0;
+            background: var(--bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: white;
+            width: 100vw; height: 100vh;
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
 
-        /* 🌌 FIXED AMBIENT BACKGROUND */
-        .ambient-container {
-            position: fixed;
-            /* Fix for the white line: slight negative offset to hide edge artifacts */
-            top: -2px; 
-            left: -2px;
-            width: calc(100% + 4px); 
-            height: calc(100vh + 4px); 
-            overflow: hidden; 
-            z-index: -1;
-            /* Diagonal Darkening Overlay: From top-left (clear) to bottom-right (dark) */
-            background: 
-                linear-gradient(135deg, rgba(1, 10, 26, 0) 0%, rgba(1, 10, 26, 0.85) 100%),
-                var(--bg);
-        }
+        .ambient-container {
+            position: fixed;
+            top: -2px; left: -2px;
+            width: calc(100% + 4px); height: calc(100vh + 4px);
+            overflow: hidden; z-index: -1;
+            background: linear-gradient(135deg, rgba(1, 10, 26, 0) 0%, rgba(1, 10, 26, 0.85) 100%), var(--bg);
+        }
 
-        /* Static Blobs (No Animation to prevent color glitches) */
-        .blob {
-            position: absolute; width: 700px; height: 700px;
-            background: radial-gradient(circle, var(--deep-blue), var(--blue), transparent 75%);
-            filter: blur(100px); border-radius: 50%;
-            opacity: 0.5;
-            transform: translate(20%, 20%);
-            top: -10%; left: -10%;
-        }
+        .blob {
+            position: absolute; width: 700px; height: 700px;
+            background: radial-gradient(circle, var(--deep-blue), var(--blue), transparent 75%);
+            filter: blur(100px); border-radius: 50%; opacity: 0.5;
+            top: -10%; left: -10%;
+        }
 
-        .blob-2 {
-            position: absolute; width: 500px; height: 500px;
-            background: radial-gradient(circle, var(--blue), transparent 70%);
-            filter: blur(80px); border-radius: 50%;
-            bottom: -5%; right: -5%;
-            opacity: 0.3;
-            transform: translate(-15%, -15%);
-        }
+        .blob-2 {
+            position: absolute; width: 500px; height: 500px;
+            background: radial-gradient(circle, var(--blue), transparent 70%);
+            filter: blur(80px); border-radius: 50%; opacity: 0.3;
+            bottom: -5%; right: -5%;
+        }
 
-        /* 🏛️ GLASS CARD */
-        .glass-card {
-            position: relative;
-            background: var(--glass);
-            backdrop-filter: blur(35px);
-            -webkit-backdrop-filter: blur(35px);
-            border: 1px solid var(--glass-border);
-            border-radius: 40px;
-            padding: 45px 30px;
-            text-align: center;
-            width: 82%; max-width: 340px;
-            min-height: 380px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
-            display: flex; flex-direction: column; justify-content: center;
-        }
+        .glass-card {
+            position: relative;
+            background: var(--glass);
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 45px 30px;
+            text-align: center;
+            width: 82%; max-width: 340px;
+            min-height: 380px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+            display: flex; flex-direction: column; justify-content: center;
+        }
 
-        .content-stack { position: relative; z-index: 10; width: 100%; }
+        h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1px; }
+        p { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 35px; line-height: 1.6; }
 
-        h1 { font-size: 1.8rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -1px; }
-        p { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 35px; line-height: 1.6; }
+        .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 30px; display: none; }
+        svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
+        circle { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.05); }
+        .progress {
+            stroke: var(--blue); stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
+            transition: stroke-dashoffset 0.1s linear;
+        }
 
-        .loader-container { position: relative; width: 100px; height: 100px; margin: 0 auto 30px; display: none; }
-        svg { transform: rotate(-90deg); width: 100px; height: 100px; overflow: visible; }
-        circle { fill: none; stroke-width: 7; stroke: rgba(255,255,255,0.05); }
-        .progress {
-            stroke: var(--blue); stroke-dasharray: 282.7; stroke-dashoffset: 282.7;
-            transition: stroke-dashoffset 0.1s linear;
-        }
+        .btn {
+            width: 100%; padding: 20px; border-radius: 20px;
+            border: none; font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: 0.3s ease;
+            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px;
+        }
 
-        .btn {
-            width: 100%; padding: 20px; border-radius: 20px;
-            border: none; font-size: 15px; font-weight: 700;
-            cursor: pointer; transition: 0.3s ease;
-            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px;
-        }
-
-        #b1 { background: #ffffff; color: #000; }
-
-        #b2 {
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            cursor: not-allowed;
-        }
-
-        #b2.active {
-            background: #ffffff;
-            color: #000000;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-        }
-    </style>
+        #b1 { background: #ffffff; color: #000; }
+        #b2 {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+        }
+        #b2.active { background: #ffffff; color: #000; cursor: pointer; border: none; }
+    </style>
 </head>
 <body>
-    <div class="ambient-container">
-        <div class="blob"></div>
-        <div class="blob-2"></div>
-    </div>
+    <div class="ambient-container"><div class="blob"></div><div class="blob-2"></div></div>
 
-    <div class="glass-card">
-        <div class="content-stack">
-            <h1>Identity Link</h1>
-            <p id="msg">Verifying network protocols...<br>Link ready in 4 seconds.</p>
+    <div class="glass-card">
+        <div class="content-stack">
+            <h1>Identity Link</h1>
+            <p id="msg">Verifying network protocols...<br>Link ready in 4 seconds.</p>
 
-            <div class="loader-container" id="lBox">
-                <svg viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="45"></circle>
-                    <circle cx="50" cy="50" r="45" class="progress" id="dot"></circle>
-                </svg>
-            </div>
+            <div class="loader-container" id="lBox">
+                <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45"></circle>
+                    <circle cx="50" cy="50" r="45" class="progress" id="dot"></circle>
+                </svg>
+            </div>
 
-            <button id="b1" class="btn">Start Verify</button>
-            <button id="b2" class="btn" disabled>Continue</button>
-        </div>
-    </div>
+            <button id="b1" class="btn">Start Verify</button>
+            <button id="b2" class="btn" disabled>Continue</button>
+        </div>
+    </div>
 
-    <script>
-        const u = new URLSearchParams(window.location.search);
-        const m = u.get('m');
-        const t = u.get('t') ? atob(u.get('t')) : '#';
-        
-        const b1 = document.getElementById('b1');
-        const b2 = document.getElementById('b2');
-        const lBox = document.getElementById('lBox');
-        const dot = document.getElementById('dot');
-        const msg = document.getElementById('msg');
+    <script>
+        // THIS IS THE IMPORTANT PART: Matching the Bot's "m" and "t"
+        const u = new URLSearchParams(window.location.search);
+        const m = u.get('m'); // Monetag link
+        const t = u.get('t') ? atob(u.get('t')) : '#'; // Decoded target link
+        
+        const b1 = document.getElementById('b1');
+        const b2 = document.getElementById('b2');
+        const lBox = document.getElementById('lBox');
+        const dot = document.getElementById('dot');
+        const msg = document.getElementById('msg');
 
-        b1.onclick = () => {
-            if(m) window.open(m, '_blank');
-            b1.style.display = 'none';
-            lBox.style.display = 'block';
-            msg.innerHTML = "Authenticating session...<br>Please wait.";
+        b1.onclick = () => {
+            if(m) window.open(m, '_blank'); // Opens the ad
+            b1.style.display = 'none';
+            lBox.style.display = 'block';
+            msg.innerHTML = "Authenticating session...<br>Please wait.";
 
-            let time = 0;
-            const limit = 4000;
-            const dash = 282.7;
+            let time = 0;
+            const limit = 4000; // 4 seconds
+            const dash = 282.7;
 
-            const timer = setInterval(() => {
-                time += 50;
-                let offset = dash - (time / limit) * dash;
-                dot.style.strokeDashoffset = offset;
+            const timer = setInterval(() => {
+                time += 50;
+                let offset = dash - (time / limit) * dash;
+                dot.style.strokeDashoffset = offset;
 
-                if (time >= limit) {
-                    clearInterval(timer);
-                    lBox.style.display = 'none';
-                    b2.disabled = false;
-                    b2.classList.add('active');
-                    msg.innerHTML = "Verification Successful ✅";
-                }
-            }, 50);
-        };
+                if (time >= limit) {
+                    clearInterval(timer);
+                    lBox.style.display = 'none';
+                    b2.disabled = false;
+                    b2.classList.add('active');
+                    msg.innerHTML = "Verification Successful ✅";
+                }
+            }, 50);
+        };
 
-        b2.onclick = () => { if(!b2.disabled) window.location.href = t; };
-    </script>
+        b2.onclick = () => { if(!b2.disabled) window.location.href = t; };
+    </script>
 </body>
 </html>
