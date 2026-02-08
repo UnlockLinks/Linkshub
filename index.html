@@ -23,27 +23,35 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* 🌌 ENHANCED BLUE ATMOSPHERE */
+        /* 🌌 STATIC BLUE ATMOSPHERE (Glitch Fix) */
         .ambient-container {
-            position: absolute; width: 100%; height: 100%;
+            position: fixed; /* Fixed avoids top-line scrolling seams */
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             overflow: hidden; z-index: -1;
+            background: var(--bg);
         }
+
+        /* Positioning these blobs at their "final" animation resting point */
         .blob {
             position: absolute; width: 700px; height: 700px;
             background: radial-gradient(circle, var(--deep-blue), var(--blue), transparent 75%);
             filter: blur(100px); border-radius: 50%;
             opacity: 0.5;
-            animation: move 10s infinite alternate ease-in-out;
+            /* Static position based on your 'to' keyframe (20%, 20%) */
+            transform: translate(20%, 20%);
+            top: -10%; left: -10%;
         }
+
         .blob-2 {
             position: absolute; width: 500px; height: 500px;
             background: radial-gradient(circle, var(--blue), transparent 70%);
             filter: blur(80px); border-radius: 50%;
-            bottom: -10%; right: -10%;
+            bottom: -5%; right: -5%;
             opacity: 0.3;
-            animation: move 14s infinite alternate-reverse ease-in-out;
+            /* Static position based on your 'from' reverse keyframe (-15%, -15%) */
+            transform: translate(-15%, -15%);
         }
-        @keyframes move { from { transform: translate(-15%, -15%); } to { transform: translate(20%, 20%); } }
 
         /* 🏛️ COMPACT GLASS CARD */
         .glass-card {
@@ -83,7 +91,6 @@
 
         #b1 { background: #ffffff; color: #000; }
 
-        /* 💎 PLAIN WHITE BUTTON (NO GLOW) */
         #b2 {
             background: rgba(255, 255, 255, 0.05);
             color: rgba(255, 255, 255, 0.1);
@@ -96,7 +103,7 @@
             color: #000000;
             cursor: pointer;
             border: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Standard shadow for depth only */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
         }
     </style>
 </head>
