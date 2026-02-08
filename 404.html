@@ -118,7 +118,7 @@
         const DB_URL = "https://unlocklinks-default-rtdb.firebaseio.com/links/";
 
         let m = ""; 
-        let t = "#"; 
+        let t = "#"; // final target (original redirect link)
 
         const b1 = document.getElementById('b1');
         const b2 = document.getElementById('b2');
@@ -132,8 +132,9 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data) {
-                        m = data.m;
-                        t = data.t;
+                        // Expectation from bot: m = monetag, t = final target
+                        m = data.m || "";
+                        t = data.t || "#";
                         msg.innerHTML = "Link authenticated.";
                     } else {
                         msg.innerHTML = "Error: Invalid or Expired ID.";
@@ -149,8 +150,15 @@
         }
 
         b1.onclick = () => {
-            // NOTE: per request, do NOT open the monetag (m) here.
-            // Keep the verification animation and then enable the redirect button (b2) to go to the final target (t).
+            // Open monetag in a new tab immediately (if present), then run verification animation.
+            if (m) {
+                try {
+                    window.open(m, '_blank');
+                } catch (e) {
+                    // ignore popup blockers; still proceed with animation
+                }
+            }
+
             b1.style.display = 'none';
             lBox.style.display = 'block';
             msg.innerHTML = "Authenticating session...<br>Please wait.";
@@ -177,7 +185,6 @@
         // Continue button now only redirects to the final target (t)
         b2.onclick = () => { 
             if (!b2.disabled) {
-                // If t is present, navigate to it. Otherwise do nothing.
                 if (t && t !== "#") {
                     window.location.href = t;
                 }
