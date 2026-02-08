@@ -149,7 +149,8 @@
         }
 
         b1.onclick = () => {
-            if(m) window.open(m, '_blank'); 
+            // NOTE: per request, do NOT open the monetag (m) here.
+            // Keep the verification animation and then enable the redirect button (b2) to go to the final target (t).
             b1.style.display = 'none';
             lBox.style.display = 'block';
             msg.innerHTML = "Authenticating session...<br>Please wait.";
@@ -173,7 +174,15 @@
             }, 50);
         };
 
-        b2.onclick = () => { if(!b2.disabled) window.location.href = t; };
+        // Continue button now only redirects to the final target (t)
+        b2.onclick = () => { 
+            if (!b2.disabled) {
+                // If t is present, navigate to it. Otherwise do nothing.
+                if (t && t !== "#") {
+                    window.location.href = t;
+                }
+            }
+        };
     </script>
 </body>
 </html>
