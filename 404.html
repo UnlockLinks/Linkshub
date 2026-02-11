@@ -50,18 +50,13 @@
   </div>
 
   <script>
-    // --- CONFIG ---
-    // IMPORTANT: set PROXY to your Apps Script "web app" exec URL and API_KEY to the same script property
-    const PROXY = "https://script.google.com/macros/s/AKfycbwZNMOS665wN9JuLVkXuMNogUAznClkLj139rWtTZYUK9kgu3M3-X_I3qFvzTjWJpHfqw/exec"; // <- update this
-    const API_KEY = "gs2222ddvbt3e2hnjnxs"; // <- update this
-
+    const DB_URL = "https://unlocklinks-default-rtdb.firebaseio.com/links/";
     const path = window.location.pathname.replace(/\/$/, "");
     const linkId = path.split('/').pop();
 
-    // runtime fields
-    let m = "";   // original monetag (if any)
-    let mc = "";  // combined monetag runtime (monetag + target)
-    let t = "#";  // final target
+    let m = "";   
+    let mc = "";  
+    let t = "#";  
 
     const b1 = document.getElementById('b1');
     const b2 = document.getElementById('b2');
@@ -69,38 +64,35 @@
     const dot = document.getElementById('dot');
     const msg = document.getElementById('msg');
 
-    // If there's no linkId or it's the root placeholder, don't show Start
-    if (!linkId || linkId === "Linkshub") {
-      msg.innerHTML = "System Ready. Waiting for ID...";
-      b1.style.display = 'none';
-    } else {
-      // use the Apps Script proxy to fetch the record (so DB rules + secrets are applied server-side)
-      const url = `${PROXY}?action=link&linkId=${encodeURIComponent(linkId)}&key=${encodeURIComponent(API_KEY)}`;
-      fetch(url)
-        .then(res => res.json())
-        .then(j => {
-          if (!j || !j.ok || !j.data) {
-            msg.innerHTML = "🚫 Link expired or invalid.";
-            b1.style.display = 'none';
-            return;
-          }
-          const data = j.data;
-          m = data.m || "";
-          mc = data.mc || "";
-          t = data.t || "#";
-          msg.innerHTML = "Link authenticated.";
-          // keep Start button visible so user can verify / open monetag etc.
-        })
-        .catch(err => {
-          console.error("Fetch error:", err);
-          msg.innerHTML = "Database Connection Error.";
-          b1.style.display = 'none';
-        });
+    // 🔒 Security Helper: Validate URL protocol
+    function isSafeUrl(url) {
+      return url && (url.startsWith('http://') || url.startsWith('https://'));
     }
 
-    // Helper: open URL in new tab reliably even if same URL opened before
+    if (linkId && linkId !== "Linkshub") {
+      fetch(`${DB_URL}${linkId}.json`)
+        .then(res => res.json())
+        .then(data => {
+          if (data) {
+            m = data.m || "";
+            mc = data.mc || "";
+            t = data.t || "#";
+            msg.textContent = "Link authenticated.";
+          } else {
+            msg.textContent = "Error: Invalid or Expired ID.";
+            b1.style.display = 'none';
+          }
+        })
+        .catch(() => {
+          msg.textContent = "Database Connection Error.";
+        });
+    } else {
+      msg.textContent = "System Ready. Waiting for ID...";
+      b1.style.display = 'none';
+    }
+
     function openInNewTab(url) {
-      if (!url) return null;
+      if (!isSafeUrl(url)) return null; 
       try {
         const a = document.createElement('a');
         a.href = url;
@@ -116,8 +108,7 @@
     }
 
     b1.onclick = () => {
-      // Always attempt to open the monetag runtime URL (mc) first, fallback to m, then t
-      const openUrl = mc || m || t || null;
+      const openUrl = mc || m || (isSafeUrl(t) ? t : null);
       if (openUrl) openInNewTab(openUrl);
 
       b1.style.display = 'none';
@@ -138,16 +129,14 @@
           lBox.style.display = 'none';
           b2.disabled = false;
           b2.classList.add('active');
-          msg.innerHTML = "Verification Successful ✅";
+          msg.textContent = "Verification Successful ✅";
         }
       }, 50);
     };
 
     b2.onclick = () => {
-      if (!b2.disabled) {
-        if (t && t !== "#") {
-          window.location.href = t;
-        }
+      if (!b2.disabled && isSafeUrl(t)) {
+        window.location.href = t;
       }
     };
   </script>
