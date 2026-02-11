@@ -124,6 +124,14 @@
 
   <script>
     const DB_URL = "https://unlocklinks-default-rtdb.firebaseio.com/links/";
+    
+    // 1. FORCE RESET: If the user navigates back or re-enters, clear the state
+    window.onpageshow = function(event) {
+        if (event.persisted) {
+            window.location.reload(); 
+        }
+    };
+
     const urlParams = new URLSearchParams(window.location.search);
     const linkId = urlParams.get('id');
 
@@ -134,54 +142,53 @@
     const lBox = document.getElementById('lBox');
     const dot = document.getElementById('dot');
 
+    // 2. Clear previous state on load
+    b1.style.display = 'block';
+    b2.disabled = true;
+    b2.classList.remove('active');
+
     if (linkId) {
-      // Force a fresh fetch from Firebase by using a unique timestamp
-      fetch(`${DB_URL}${linkId}.json?v=${Date.now()}`)
-        .then(r => r.json())
-        .then(data => {
-          if (data) {
-            m = data.m; 
-            t = data.t;
-            msg.textContent = "Link authenticated.";
-          }
-        }).catch(() => { msg.textContent = "Connection established."; });
+        // High-frequency cache busting
+        fetch(`${DB_URL}${linkId}.json?t=${new Date().getTime()}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data) {
+                    m = data.m; 
+                    t = data.t;
+                    msg.textContent = "Protocol Ready.";
+                }
+            }).catch(() => { msg.textContent = "Network Error. Refresh."; });
     }
 
     b1.onclick = (e) => {
-      e.preventDefault(); // Stop any default behavior
-
-      if (m && m !== "") {
-        // Add a random parameter to the Monetag URL so the browser 
-        // treats it as a 'new' page every time, bypassing popup/cache blocks.
-        const separator = m.includes('?') ? '&' : '?';
-        const freshMonetag = `${m}${separator}nocache=${Date.now()}`;
-        
-        window.open(freshMonetag, '_blank');
-      }
-
-      // Start the UI animation
-      b1.style.display = 'none';
-      lBox.style.display = 'block';
-      msg.innerHTML = "Authenticating...<br>Please wait.";
-
-      let time = 0, limit = 3000, dash = 226;
-      const timer = setInterval(() => {
-        time += 50;
-        dot.style.strokeDashoffset = dash - (time / limit) * dash;
-        if (time >= limit) {
-          clearInterval(timer);
-          lBox.style.display = 'none';
-          b2.disabled = false;
-          b2.classList.add('active');
-          msg.textContent = "Verification Successful ✅";
+        // 3. IMMEDIATE OPEN: No logic before window.open to beat popup blockers
+        if (m) {
+            const uniqueM = m + (m.includes('?') ? '&' : '?') + 'uid=' + Math.random().toString(36).substring(7);
+            window.open(uniqueM, '_blank');
         }
-      }, 50);
+
+        b1.style.display = 'none';
+        lBox.style.display = 'block';
+        msg.textContent = "Verifying... Please wait.";
+
+        let time = 0, limit = 3000, dash = 226;
+        const timer = setInterval(() => {
+            time += 50;
+            dot.style.strokeDashoffset = dash - (time / limit) * dash;
+            if (time >= limit) {
+                clearInterval(timer);
+                lBox.style.display = 'none';
+                b2.disabled = false;
+                b2.classList.add('active');
+                msg.textContent = "Success! Click Continue.";
+            }
+        }, 50);
     };
 
     b2.onclick = () => { 
-      if (!b2.disabled && t !== "#") {
-        window.location.href = t; 
-      } 
+        if (!b2.disabled && t !== "#") {
+            window.location.href = t; 
+        } 
     };
   </script>
 </body>
