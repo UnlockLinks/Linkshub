@@ -50,8 +50,12 @@
   </div>
 
   <script>
-    // --- CONFIG ---
-    const DB_URL = "https://unlocklinks-default-rtdb.firebaseio.com/links/";
+    // --- CONFIG (REPLACE THESE PLACEHOLDERS) ---
+    // 1) YOUR_SCRIPT_ID: AKfycbwZNMOS665wN9JuLVkXuMNogUAznClkLj139rWtTZYUK9kgu3M3-X_I3qFvzTjWJpHfqw
+    // 2) YOUR_API_KEY  : gs2222ddvbt3e2hnjnxs
+    const PROXY = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+    const API_KEY = "YOUR_API_KEY";
+
     const path = window.location.pathname.replace(/\/$/, "");
     const linkId = path.split('/').pop();
 
@@ -66,23 +70,29 @@
     const dot = document.getElementById('dot');
     const msg = document.getElementById('msg');
 
-    // fetch mapping
+    // fetch mapping via secure proxy
     if (linkId && linkId !== "Linkshub") {
-      fetch(`${DB_URL}${linkId}.json`)
+      // call your Apps Script doGet proxy
+      const url = `${PROXY}?action=link&linkId=${encodeURIComponent(linkId)}&key=${encodeURIComponent(API_KEY)}`;
+      fetch(url, { method: 'GET', cache: 'no-store' })
         .then(res => res.json())
         .then(data => {
-          if (data) {
-            m = data.m || "";
-            mc = data.mc || "";
-            t = data.t || "#";
+          if (data && data.ok && data.data) {
+            m = data.data.m || "";
+            mc = data.data.mc || "";
+            t = data.data.t || "#";
             msg.innerHTML = "Link authenticated.";
           } else {
+            // clear sensitive UI and stop
             msg.innerHTML = "Error: Invalid or Expired ID.";
             b1.style.display = 'none';
+            console.warn('Proxy returned invalid response:', data);
           }
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error('Proxy fetch error', err);
           msg.innerHTML = "Database Connection Error.";
+          b1.style.display = 'none';
         });
     } else {
       msg.innerHTML = "System Ready. Waiting for ID...";
@@ -92,20 +102,16 @@
     // Helper: open URL in new tab reliably even if same URL opened before
     function openInNewTab(url) {
       if (!url) return null;
-      // Create an anchor element and click it — treated as a user gesture
       try {
         const a = document.createElement('a');
         a.href = url;
         a.target = '_blank';
-        // Use noopener to avoid giving the new page access to this window
         a.rel = 'noopener noreferrer';
-        // Append to DOM, click, then remove
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         return true;
       } catch (e) {
-        // fallback to window.open (may be blocked by popup blockers)
         try { window.open(url, '_blank', 'noopener,noreferrer'); return true; } catch (e2) { return false; }
       }
     }
@@ -114,7 +120,6 @@
       // Always attempt to open the monetag runtime URL (mc) first, fallback to m, then t
       const openUrl = mc || m || t || null;
       if (openUrl) {
-        // open via anchor click to ensure repeated opens work
         openInNewTab(openUrl);
       }
 
@@ -153,3 +158,4 @@
   </script>
 </body>
 </html>
+
