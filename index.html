@@ -1,154 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
-  <title>Secure Network Portal</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify Access</title>
 
-  <style>
-    :root {
-      --bg:#010a1a;--blue:#00d2ff;--deep-blue:#0045ff;
-      --glass:rgba(255,255,255,0.07);
-      --glass-border:rgba(255,255,255,0.25);
-    }
-    body{margin:0;background:var(--bg);font-family:Inter,sans-serif;color:#fff;
-      width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
-    .ambient-container{position:fixed;inset:-2px;z-index:-1}
-    .blob,.blob-2{position:absolute;border-radius:50%;filter:blur(90px)}
-    .blob{width:700px;height:700px;top:-10%;left:-10%;
-      background:radial-gradient(circle,var(--deep-blue),var(--blue),transparent 70%)}
-    .blob-2{width:500px;height:500px;bottom:-5%;right:-5%;
-      background:radial-gradient(circle,var(--blue),transparent 70%)}
-    .glass-card{background:var(--glass);border:1px solid var(--glass-border);
-      backdrop-filter:blur(35px);border-radius:40px;padding:40px 28px;
-      width:82%;max-width:340px;box-shadow:0 30px 80px #000;text-align:center}
-    h1{margin:0 0 10px;font-size:1.8rem}
-    p{font-size:14px;color:rgba(255,255,255,.55);margin-bottom:35px}
-    .btn{width:100%;padding:18px;border-radius:20px;border:none;
-      font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer}
-    #b1{background:#fff;color:#000}
-    #b2{margin-top:12px;background:rgba(255,255,255,.05);
-      color:rgba(255,255,255,.2);cursor:not-allowed}
-    #b2.active{background:#fff;color:#000;cursor:pointer}
-    .loader-container{display:none;margin:0 auto 30px;width:100px;height:100px}
-    svg{transform:rotate(-90deg)}
-    circle{fill:none;stroke-width:7}
-    .progress{stroke:var(--blue);stroke-dasharray:282.7;stroke-dashoffset:282.7}
-  </style>
+<style>
+body{
+  margin:0;
+  height:100vh;
+  background:#020617;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+}
+.card{
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(25px);
+  border-radius:24px;
+  padding:32px;
+  width:320px;
+  text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+h1{margin:0 0 8px;font-size:1.6rem}
+p{font-size:14px;opacity:.7;margin-bottom:24px}
+button{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:16px;
+  font-weight:700;
+  font-size:14px;
+  cursor:pointer;
+}
+#start{background:#fff;color:#000}
+#continue{
+  margin-top:12px;
+  background:#aaa;
+  color:#000;
+  display:none;
+}
+.loader{
+  width:80px;height:80px;
+  border:6px solid rgba(255,255,255,.1);
+  border-top-color:#3b82f6;
+  border-radius:50%;
+  margin:0 auto 20px;
+  animation:spin 1s linear infinite;
+  display:none;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
 </head>
 
 <body>
-<div class="ambient-container"><div class="blob"></div><div class="blob-2"></div></div>
 
-<div class="glass-card">
-  <h1>Identity Link</h1>
-  <p id="msg">Verifying network…</p>
+<div class="card">
+  <h1>Link Verification</h1>
+  <p id="msg">Loading secure link…</p>
 
-  <div class="loader-container" id="lBox">
-    <svg viewBox="0 0 100 100">
-      <circle cx="50" cy="50" r="45" stroke="rgba(255,255,255,.05)"></circle>
-      <circle cx="50" cy="50" r="45" class="progress" id="dot"></circle>
-    </svg>
-  </div>
+  <div class="loader" id="loader"></div>
 
-  <button id="b1" class="btn">Start Verify</button>
-  <button id="b2" class="btn" disabled>Continue</button>
+  <button id="start" disabled>START VERIFY</button>
+  <button id="continue">CONTINUE</button>
 </div>
 
 <script>
-/* ===============================
-   CONFIG
-================================ */
-const DB_URL = "https://unlocklinks-default-rtdb.firebaseio.com/links/";
-const linkId = location.pathname.replace(/\/$/,'').split('/').pop();
+/* ================= CONFIG ================= */
+const DB = "https://unlocklinks-default-rtdb.firebaseio.com/links/";
+const id = location.pathname.replace(/\/$/,'').split('/').pop();
 
-let m="", mc="", t="#";
+/* ================= ELEMENTS ================= */
+const startBtn = document.getElementById("start");
+const contBtn  = document.getElementById("continue");
+const msg      = document.getElementById("msg");
+const loader   = document.getElementById("loader");
 
-const b1 = document.getElementById('b1');
-const b2 = document.getElementById('b2');
-const msg = document.getElementById('msg');
-const box = document.getElementById('lBox');
-const dot = document.getElementById('dot');
+/* ================= STATE ================= */
+let monetag = "";
+let target  = "";
 
-/* ===============================
-   URL NORMALIZER (CRITICAL FIX)
-================================ */
-function normalize(url){
-  if(!url) return "";
-  url = url.trim();
-  if(/^https?:\/\//i.test(url)) return url;
-  if(url.startsWith("//")) return location.protocol + url;
-  return "https://" + url;
+/* ================= HELPERS ================= */
+function fixUrl(u){
+  if(!u) return "";
+  if(/^https?:\/\//i.test(u)) return u;
+  return "https://" + u;
 }
 
-/* ===============================
-   FETCH LINK DATA
-================================ */
-if(!linkId || linkId === "Linkshub"){
-  msg.innerText="Waiting for secure ID…";
-  b1.style.display="none";
+/* ================= LOAD LINK ================= */
+if(!id || id === "Linkshub"){
+  msg.textContent = "Invalid link";
 }else{
-  fetch(DB_URL + linkId + ".json")
+  fetch(DB + id + ".json")
     .then(r=>r.json())
     .then(d=>{
-      if(!d){ throw 0 }
-      m  = normalize(d.m);
-      mc = normalize(d.mc);
-      t  = normalize(d.t);
-      msg.innerText="Link authenticated.";
+      if(!d) throw 0;
+      monetag = fixUrl(d.mc || d.m);
+      target  = fixUrl(d.t);
+      startBtn.disabled = false;
+      msg.textContent = "Click start to verify";
     })
     .catch(()=>{
-      msg.innerText="🚫 Invalid or expired link.";
-      b1.style.display="none";
+      msg.textContent = "Link expired or not found";
     });
 }
 
-/* ===============================
-   OPEN MONETAG (FIXED)
-================================ */
-function openNewTab(url){
-  if(!url) return;
-  const a=document.createElement("a");
-  a.href=url;
-  a.target="_blank";
-  a.rel="noopener noreferrer";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
+/* ================= START VERIFY ================= */
+startBtn.onclick = ()=>{
+  if(!monetag) return;
 
-/* ===============================
-   START VERIFY
-================================ */
-b1.onclick = ()=>{
-  openNewTab(mc || m || t);
-
-  b1.style.display="none";
-  box.style.display="block";
-  msg.innerHTML="Authenticating…";
-
-  let time=0;
-  const timer=setInterval(()=>{
-    time+=50;
-    dot.style.strokeDashoffset=282.7-(time/4000)*282.7;
-    if(time>=4000){
-      clearInterval(timer);
-      box.style.display="none";
-      b2.disabled=false;
-      b2.classList.add("active");
-      msg.innerHTML="Verification Successful ✅";
-    }
-  },50);
+  // 🔥 ONLY METHOD THAT WORKS
+  location.href = monetag;
 };
 
-/* ===============================
-   CONTINUE
-================================ */
-b2.onclick=()=>{
-  if(!b2.disabled && t){
-    location.href=t;
+/* ================= CONTINUE ================= */
+contBtn.onclick = ()=>{
+  if(target) location.href = target;
+};
+
+/* ================= RETURN DETECTION ================= */
+/* Monetag sends user back → we unlock continue */
+window.addEventListener("pageshow",()=>{
+  if(monetag){
+    loader.style.display = "block";
+    msg.textContent = "Verifying…";
+
+    setTimeout(()=>{
+      loader.style.display = "none";
+      contBtn.style.display = "block";
+      msg.textContent = "Verification complete";
+    },3000);
   }
-};
+});
 </script>
+
 </body>
 </html>
