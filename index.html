@@ -1,18 +1,131 @@
-{
-  "rules": {
-    "links": {
-      "$linkId": {
-        // Allow reading ONLY if the user knows the specific Link ID
-        // This prevents people from downloading your entire database list
-        ".read": true, 
-        
-        // COMPLETELY BLOCK WRITING from the public internet
-        // You must manually add links via the Firebase Console
-        ".write": false
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests; frame-ancestors 'none';">
+  <title>Secure Network Portal</title>
+  <style>
+    /* ... (CSS remains exactly the same as your original) ... */
+    body { margin: 0; padding: 0; background-color: #010a1a; font-family: 'Inter', -apple-system, sans-serif; color: #ffffff; width: 100vw; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .ambient-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: #010a1a; }
+    .blob { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, #0045ff 0%, #00d2ff 30%, transparent 70%); filter: blur(80px); -webkit-filter: blur(80px); border-radius: 50%; opacity: 0.4; top: -10%; left: -10%; }
+    .blob-2 { position: absolute; width: 500px; height: 500px; background: radial-gradient(circle, #00d2ff 0%, transparent 70%); filter: blur(80px); -webkit-filter: blur(80px); border-radius: 50%; opacity: 0.3; bottom: -10%; right: -10%; }
+    .glass-card { position: relative; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 35px; padding: 40px 25px; text-align: center; width: 85%; max-width: 320px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); }
+    h1 { font-size: 1.7rem; font-weight: 800; margin: 0 0 10px; }
+    p { font-size: 14px; color: rgba(255, 255, 255, 0.6); margin-bottom: 30px; line-height: 1.5; }
+    .loader-container { position: relative; width: 80px; height: 80px; margin: 0 auto 30px; display: none; }
+    svg { transform: rotate(-90deg); width: 80px; height: 80px; }
+    circle { fill: none; stroke-width: 6; stroke: rgba(255, 255, 255, 0.1); }
+    .progress { stroke: #00d2ff; stroke-dasharray: 226; stroke-dashoffset: 226; transition: stroke-dashoffset 0.1s linear; }
+    .btn { width: 100%; padding: 18px; border-radius: 18px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; transition: 0.2s; }
+    #b1 { background: #ffffff; color: #000000; }
+    #b2 { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.1); cursor: not-allowed; }
+    #b2.active { background: #ffffff; color: #000000; cursor: pointer; border: none; }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-container">
+    <div class="blob"></div>
+    <div class="blob-2"></div>
+  </div>
+
+  <div class="glass-card">
+    <h1>Identity Link</h1>
+    <p id="msg">Verifying network protocols...</p>
+
+    <div class="loader-container" id="lBox">
+      <svg viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="36"></circle>
+        <circle cx="50" cy="50" r="36" class="progress" id="dot"></circle>
+      </svg>
+    </div>
+
+    <button id="b1" class="btn">Start Verify</button>
+    <button id="b2" class="btn" disabled>Continue</button>
+  </div>
+
+  <script>
+    // SECURITY CONFIG
+    const DB_URL = "https://unlocklinks-default-rtdb.firebaseio.com/links/";
+    
+    // 1. INPUT SANITIZATION: Only allow alphanumeric IDs to prevent directory traversal
+    const urlParams = new URLSearchParams(window.location.search);
+    const rawId = urlParams.get('id');
+    const linkId = (rawId && /^[a-zA-Z0-9_-]+$/.test(rawId)) ? rawId : null; 
+
+    let t = "#", m = "";
+    const b1 = document.getElementById('b1');
+    const b2 = document.getElementById('b2');
+    const msg = document.getElementById('msg');
+    const lBox = document.getElementById('lBox');
+    const dot = document.getElementById('dot');
+
+    // Helper: Ensure URL is valid and uses http/https (Prevents 'javascript:' attacks)
+    const isValidUrl = (string) => {
+      try { 
+        const url = new URL(string);
+        return url.protocol === "http:" || url.protocol === "https:";
+      } catch (_) { return false; }
+    };
+
+    if (linkId) {
+      // EncodeURIComponent ensures the ID is treated as a string, not a path
+      fetch(`${DB_URL}${encodeURIComponent(linkId)}.json`)
+        .then(r => r.json())
+        .then(data => {
+          if (data) {
+            // 2. DATA VALIDATION: Validate URLs before storing them
+            if (data.m && isValidUrl(data.m)) m = data.m;
+            if (data.t && isValidUrl(data.t)) t = data.t;
+            
+            // 3. SAFE DOM MANIPULATION: use textContent prevents HTML injection
+            msg.textContent = "Link authenticated.";
+          } else {
+             msg.textContent = "Invalid Link ID.";
+             b1.disabled = true;
+          }
+        })
+        .catch(() => { msg.textContent = "Connection established."; });
+    } else {
+       msg.textContent = "No ID provided.";
+       b1.disabled = true;
+    }
+
+    b1.onclick = () => {
+      if (m && m !== "") {
+        // 4. SECURE OPEN: Prevent reverse tabnabbing
+        const newWindow = window.open(m, '_blank');
+        if (newWindow) newWindow.opener = null;
       }
-    },
-    // Deny access to everything else
-    ".read": false,
-    ".write": false
-  }
-}
+
+      b1.style.display = 'none';
+      lBox.style.display = 'block';
+      
+      // Kept innerHTML here only for the <br> tag, but strictly static content
+      msg.innerHTML = "Authenticating...<br>Please wait.";
+
+      let time = 0, limit = 3000, dash = 226;
+      const timer = setInterval(() => {
+        time += 50;
+        dot.style.strokeDashoffset = dash - (time / limit) * dash;
+        
+        if (time >= limit) {
+          clearInterval(timer);
+          lBox.style.display = 'none';
+          b2.disabled = false;
+          b2.classList.add('active');
+          msg.textContent = "Verification Successful ✅";
+        }
+      }, 50);
+    };
+
+    b2.onclick = () => { 
+      if (!b2.disabled && t !== "#" && isValidUrl(t)) {
+        window.location.href = t; 
+      } 
+    };
+  </script>
+</body>
+</html>
