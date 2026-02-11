@@ -44,15 +44,15 @@
         </svg>
       </div>
 
-      <button id="b1" class="btn">Start Verify</button>
-      <button id="b2" class="btn" disabled>Continue</button>
+      <!-- explicit type="button" to avoid accidental form submit -->
+      <button id="b1" type="button" class="btn">Start Verify</button>
+      <button id="b2" type="button" class="btn" disabled>Continue</button>
     </div>
   </div>
 
   <script>
     // ---- CONFIG ----
-    // Put your deployed Apps Script "web app" URL here (the exec URL)
-    // e.g. "https://script.google.com/macros/s/AKfycb.../exec"
+    // Your Apps Script webapp exec URL (proxy that returns {ok:true, data:{m,mc,t}})
     const PROXY = "https://script.google.com/macros/s/AKfycbwZNMOS665wN9JuLVkXuMNogUAznClkLj139rWtTZYUK9kgu3M3-X_I3qFvzTjWJpHfqw/exec";
 
     // derive linkId from path
@@ -70,20 +70,68 @@
     const dot = document.getElementById('dot');
     const msg = document.getElementById('msg');
 
-    // Helper: open URL in new tab reliably even if same URL opened before
-    function openInNewTab(url) {
-      if (!url) return null;
+    // Normalise URL: ensure protocol present. If it looks like a plain domain, add https://
+    function normalizeUrl(raw) {
+      if (!raw) return "";
+      raw = raw.trim();
+      // if protocol present already
+      if (/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(raw)) return raw;
+      // allow protocol-relative
+      if (raw.startsWith('//')) return window.location.protocol + raw;
+      // treat as https if it looks like domain or path starting without /
+      if (/^[\w-]+\.[\w.-]+/.test(raw) || /^[^\/?#]+$/.test(raw)) {
+        return 'https://' + raw;
+      }
+      // fallback - if it begins with "/" treat as absolute path on this origin
+      if (raw.startsWith('/')) return window.location.origin + raw;
+      // final fallback
+      return raw;
+    }
+
+    // Open url robustly from a user click:
+    // 1) try window.open (preferred)
+    // 2) fallback to anchor click
+    // 3) last fallback: navigate this tab (add nonce if same URL to avoid reload)
+    function openUrlRobust(url) {
+      if (!url) return false;
+      const norm = normalizeUrl(url);
       try {
+        // 1) try window.open
+        const w = window.open(norm, '_blank', 'noopener,noreferrer');
+        if (w) return true;
+      } catch (e) {
+        // ignore and continue to fallback
+      }
+
+      try {
+        // 2) anchor click (occasionally works when window.open blocked)
         const a = document.createElement('a');
-        a.href = url;
+        a.href = norm;
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
+        // If the URL is the same as current page, tack on a nonce query param so it won't simply reload
+        if (normalizeUrl(window.location.href).replace(/#.*$/,'') === norm.replace(/#.*$/,'')) {
+          a.href = norm + (norm.includes('?') ? '&' : '?') + '_r=' + Date.now();
+        }
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         return true;
       } catch (e) {
-        try { window.open(url, '_blank', 'noopener,noreferrer'); return true; } catch (e2) { return false; }
+        // continue to last fallback
+      }
+
+      try {
+        // 3) last fallback - navigate this tab. Add nonce if same href to avoid identical-reload
+        let final = norm;
+        if (normalizeUrl(window.location.href).replace(/#.*$/,'') === norm.replace(/#.*$/,'')) {
+          final = norm + (norm.includes('?') ? '&' : '?') + '_r=' + Date.now();
+        }
+        window.location.href = final;
+        return true;
+      } catch (e) {
+        console.error('All open fallbacks failed', e);
+        return false;
       }
     }
 
@@ -95,7 +143,11 @@
       const url = `${PROXY}?action=link&linkId=${encodeURIComponent(linkId)}`;
 
       fetch(url, { method: 'GET', mode: 'cors' })
-        .then(res => res.json())
+        .then(res => {
+          // handle non-200 gracefully
+          if (!res.ok) throw new Error('Network response not ok: ' + res.status);
+          return res.json();
+        })
         .then(j => {
           if (!j || !j.ok || !j.data) {
             msg.innerHTML = "🚫 Link expired or invalid.";
@@ -103,9 +155,10 @@
             return;
           }
           const data = j.data;
-          m = data.m || "";
-          mc = data.mc || "";
-          t = data.t || "#";
+          // normalise stored values
+          m = normalizeUrl(data.m || "");
+          mc = normalizeUrl(data.mc || "");
+          t = normalizeUrl(data.t || "#");
           msg.innerHTML = "Link authenticated.";
         })
         .catch(err => {
@@ -115,12 +168,15 @@
         });
     }
 
-    b1.onclick = () => {
-      // Try the runtime monetag URL first, fallback to m then t
-      const openUrl = (mc && mc !== "#") ? mc : ((m && m !== "#") ? m : (t || null));
-      if (openUrl) openInNewTab(openUrl);
+    b1.onclick = (e) => {
+      // Open monetag/runtime immediately (user gesture) using robust open
+      // prefer mc then m then t
+      const openCandidate = (mc && mc !== "#") ? mc : ((m && m !== "#") ? m : (t || null));
+      if (openCandidate) {
+        openUrlRobust(openCandidate);
+      }
 
-      // proceed with the verification animation
+      // proceed with the verification animation (same as before)
       b1.style.display = 'none';
       lBox.style.display = 'block';
       msg.innerHTML = "Authenticating session...<br>Please wait.";
@@ -146,7 +202,13 @@
 
     b2.onclick = () => {
       if (!b2.disabled && t && t !== "#") {
-        window.location.href = t;
+        // final navigation: use direct navigation (this is user-initiated)
+        // if target equals current page, add nonce so it won't just reload
+        const current = normalizeUrl(window.location.href).replace(/#.*$/,'');
+        const target = t.replace(/#.*$/,'');
+        let final = t;
+        if (current === target) final = t + (t.includes('?') ? '&' : '?') + '_r=' + Date.now();
+        window.location.href = final;
       }
     };
   </script>
