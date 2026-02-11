@@ -50,95 +50,64 @@
   </div>
 
   <script>
-    const DB_URL = "https://unlocklinks-default-rtdb.firebaseio.com/";
-    const path = window.location.pathname.replace(/\/$/, "");
-    const linkId = path.split('/').pop();
+  // 1. YOUR CONFIG
+  const DB_URL = "https://unlocklinks-default-rtdb.firebaseio.com/";
 
-    let m = "";   
-    let mc = "";  
-    let t = "#";  
+  // 2. THE ID FINDER (REPLACES OLD LOGIC)
+  function getLinkId() {
+    // Try finding it after ?id=
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('id')) return urlParams.get('id');
 
-    const b1 = document.getElementById('b1');
-    const b2 = document.getElementById('b2');
-    const lBox = document.getElementById('lBox');
-    const dot = document.getElementById('dot');
-    const msg = document.getElementById('msg');
+    // Try finding it after the # (e.g. /Linkshub/#XYZ123)
+    if (window.location.hash) return window.location.hash.substring(1);
 
-    // 🔒 Security Helper: Validate URL protocol
-    function isSafeUrl(url) {
-      return url && (url.startsWith('http://') || url.startsWith('https://'));
-    }
+    // Try finding it in the path (e.g. /Linkshub/XYZ123)
+    const pathParts = window.location.pathname.split('/').filter(p => p.length > 0);
+    // If the last part is "Linkshub", there is no ID
+    const lastPart = pathParts[pathParts.length - 1];
+    return (lastPart && lastPart !== "Linkshub") ? lastPart : null;
+  }
 
-    if (linkId && linkId !== "Linkshub") {
-      fetch(`${DB_URL}${linkId}.json`)
-        .then(res => res.json())
-        .then(data => {
-          if (data) {
-            m = data.m || "";
-            mc = data.mc || "";
-            t = data.t || "#";
-            msg.textContent = "Link authenticated.";
-          } else {
-            msg.textContent = "Error: Invalid or Expired ID.";
-            b1.style.display = 'none';
-          }
-        })
-        .catch(() => {
-          msg.textContent = "Database Connection Error.";
-        });
-    } else {
-      msg.textContent = "System Ready. Waiting for ID...";
-      b1.style.display = 'none';
-    }
+  const linkId = getLinkId();
+  console.log("Detected ID:", linkId); // For debugging
 
-    function openInNewTab(url) {
-      if (!isSafeUrl(url)) return null; 
-      try {
-        const a = document.createElement('a');
-        a.href = url;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        return true;
-      } catch (e) {
-        try { window.open(url, '_blank', 'noopener,noreferrer'); return true; } catch (e2) { return false; }
-      }
-    }
+  // 3. REST OF THE VARIABLES
+  let m = "";   
+  let mc = "";  
+  let t = "#";  
 
-    b1.onclick = () => {
-      const openUrl = mc || m || (isSafeUrl(t) ? t : null);
-      if (openUrl) openInNewTab(openUrl);
+  const b1 = document.getElementById('b1');
+  const b2 = document.getElementById('b2');
+  const lBox = document.getElementById('lBox');
+  const dot = document.getElementById('dot');
+  const msg = document.getElementById('msg');
 
-      b1.style.display = 'none';
-      lBox.style.display = 'block';
-      msg.innerHTML = "Authenticating session...<br>Please wait.";
-
-      let time = 0;
-      const limit = 4000;
-      const dash = 282.7;
-
-      const timer = setInterval(() => {
-        time += 50;
-        let offset = dash - (time / limit) * dash;
-        dot.style.strokeDashoffset = offset;
-
-        if (time >= limit) {
-          clearInterval(timer);
-          lBox.style.display = 'none';
-          b2.disabled = false;
-          b2.classList.add('active');
-          msg.textContent = "Verification Successful ✅";
+  // 4. DATABASE FETCH
+  if (linkId) {
+    fetch(`${DB_URL}${linkId}.json`)
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          m = data.m || "";
+          mc = data.mc || "";
+          t = data.t || "#";
+          msg.textContent = "Link authenticated.";
+        } else {
+          msg.textContent = "Error: Link not found in database.";
+          b1.style.display = 'none';
         }
-      }, 50);
-    };
+      })
+      .catch(err => {
+        msg.textContent = "Connection Error.";
+        console.error(err);
+      });
+  } else {
+    msg.textContent = "System Ready. Please provide a valid ID.";
+    b1.style.display = 'none';
+  }
 
-    b2.onclick = () => {
-      if (!b2.disabled && isSafeUrl(t)) {
-        window.location.href = t;
-      }
-    };
-  </script>
+  // ... (Keep the rest of your button logic exactly the same)
+</script>
 </body>
 </html>
