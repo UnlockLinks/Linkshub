@@ -87,6 +87,20 @@
     }
 
     b1.onclick = () => {
+      // ADD THIS PART HERE
+      if (m === "" && t === "#") {
+        msg.textContent = "Hold on... still connecting to secure link.";
+        return; 
+      }
+      // -----------------------
+
+      const openUrl = m || t; 
+      if (openUrl && openUrl !== "#") {
+        window.open(openUrl, '_blank');
+      }
+      
+      b1.style.display = 'none';
+      lBox.style.display = 'block';
       // If m exists, open it, otherwise try to open t
       const openUrl = m || t; 
       if (openUrl && openUrl !== "#") {
