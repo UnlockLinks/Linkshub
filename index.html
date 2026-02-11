@@ -134,9 +134,9 @@
     const lBox = document.getElementById('lBox');
     const dot = document.getElementById('dot');
 
-    // 1. Fetch data every time the page loads
     if (linkId) {
-      fetch(`${DB_URL}${linkId}.json?nocache=${new Date().getTime()}`) // Added nocache param
+      // Force a fresh fetch from Firebase by using a unique timestamp
+      fetch(`${DB_URL}${linkId}.json?v=${Date.now()}`)
         .then(r => r.json())
         .then(data => {
           if (data) {
@@ -147,13 +147,19 @@
         }).catch(() => { msg.textContent = "Connection established."; });
     }
 
-    b1.onclick = () => {
-      // 2. Force open Monetag link in a new tab immediately on click
+    b1.onclick = (e) => {
+      e.preventDefault(); // Stop any default behavior
+
       if (m && m !== "") {
-        window.open(m, '_blank');
+        // Add a random parameter to the Monetag URL so the browser 
+        // treats it as a 'new' page every time, bypassing popup/cache blocks.
+        const separator = m.includes('?') ? '&' : '?';
+        const freshMonetag = `${m}${separator}nocache=${Date.now()}`;
+        
+        window.open(freshMonetag, '_blank');
       }
 
-      // UI Transitions
+      // Start the UI animation
       b1.style.display = 'none';
       lBox.style.display = 'block';
       msg.innerHTML = "Authenticating...<br>Please wait.";
