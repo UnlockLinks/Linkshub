@@ -1,37 +1,20 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Redirecting...</title>
-    <script type="text/javascript">
-      // 1. Get the current path
-      var path = window.location.pathname;
-
-      // 2. FIX: Remove trailing slash if it exists
-      // This solves the issue where visiting ".../id/" results in an empty ID
-      if (path.endsWith('/')) {
-        path = path.slice(0, -1);
-      }
-
-      // 3. Extract the ID (last segment of the path)
-      var segments = path.split('/');
-      var id = segments.pop();
-
-      // 4. SECURITY: Validate the ID format
-      // Only allow letters, numbers, underscores, and dashes.
-      // If it contains anything else (like <script> tags), we treat it as invalid.
-      if (id && /^[a-zA-Z0-9_-]+$/.test(id)) {
-        
-        // 5. SECURE REDIRECT: Use encodeURIComponent
-        // This ensures special characters don't break the URL structure
-        window.location.replace("/Linkshub/?id=" + encodeURIComponent(id));
-        
-      } else {
-        // Fallback: If ID is missing or looks malicious, just go to the home page
-        window.location.replace("/Linkshub/");
-      }
-    </script>
-  </head>
-  <body>
-  </body>
+  <head>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <script type="text/javascript">
+      // Get the segment after /Linkshub/
+      var pathSegments = window.location.pathname.split('/');
+      var id = pathSegments[pathSegments.length - 1];
+      
+      // Redirect back to index.html but pass the ID as a parameter
+      // This happens so fast the user won't even notice
+      window.location.replace("/Linkshub/?id=" + id);
+    </script>
+  </head>
+  <body>
+  </body>
 </html>
+
+this is the site's 404.html. check and tell if there are security holes in it too or is it ready to use
