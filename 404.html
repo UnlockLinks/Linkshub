@@ -4,15 +4,27 @@
     <meta charset="utf-8">
     <title>Redirecting...</title>
     <script type="text/javascript">
-      // Get the segment after /Linkshub/
-      var pathSegments = window.location.pathname.split('/');
+      // 1. Split path and remove any empty results (like from trailing slashes)
+      var pathSegments = window.location.pathname.split('/').filter(Boolean);
+      
+      // 2. Get the last piece (the ID)
       var id = pathSegments[pathSegments.length - 1];
       
-      // Redirect back to index.html but pass the ID as a parameter
-      // This happens so fast the user won't even notice
-      window.location.replace("/Linkshub/?id=" + id);
+      // 3. Security/Logic Check
+      // We check if ID exists and isn't just the folder name "Linkshub"
+      if (id && id.toLowerCase() !== "linkshub") {
+        // Clean the ID: Only allow letters and numbers
+        var cleanId = id.replace(/[^a-zA-Z0-9]/g, "");
+        window.location.replace("/Linkshub/?id=" + cleanId);
+      } else {
+        // If no valid ID, just go to the main landing page
+        window.location.replace("/Linkshub/");
+      }
     </script>
   </head>
   <body>
+    <div style="font-family: sans-serif; text-align: center; margin-top: 50px;">
+      <p>Loading your link...</p>
+    </div>
   </body>
 </html>
