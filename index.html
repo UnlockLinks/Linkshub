@@ -8,7 +8,7 @@
     body { 
       margin: 0; 
       padding: 0; 
-      background-color: #010a1a; /* Deep blue/black */
+      background-color: #010a1a; 
       font-family: 'Inter', -apple-system, sans-serif; 
       color: #ffffff; 
       width: 100vw; 
@@ -19,7 +19,6 @@
       justify-content: center; 
     }
 
-    /* BACKGROUND GRADIENTS - Hardcoded colors to prevent "Black & White" bug */
     .ambient-container {
       position: fixed;
       top: 0;
@@ -56,7 +55,6 @@
       right: -10%;
     }
 
-    /* GLASS CARD */
     .glass-card {
       position: relative;
       background: rgba(255, 255, 255, 0.08);
@@ -74,18 +72,16 @@
     h1 { font-size: 1.7rem; font-weight: 800; margin: 0 0 10px; }
     p { font-size: 14px; color: rgba(255, 255, 255, 0.6); margin-bottom: 30px; line-height: 1.5; }
 
-    /* LOADER */
     .loader-container { position: relative; width: 80px; height: 80px; margin: 0 auto 30px; display: none; }
     svg { transform: rotate(-90deg); width: 80px; height: 80px; }
     circle { fill: none; stroke-width: 6; stroke: rgba(255, 255, 255, 0.1); }
     .progress { 
       stroke: #00d2ff; 
-      stroke-dasharray: 226; /* Adjusted for r=36 (2 * PI * 36) */
+      stroke-dasharray: 226; 
       stroke-dashoffset: 226; 
       transition: stroke-dashoffset 0.1s linear; 
     }
 
-    /* BUTTONS */
     .btn {
       width: 100%;
       padding: 18px;
@@ -131,7 +127,9 @@
     const urlParams = new URLSearchParams(window.location.search);
     const linkId = urlParams.get('id');
 
-    let t = "#", m = "";
+    // FIX: Ensure these are explicitly reset on every load
+    let t = "#", m = ""; 
+
     const b1 = document.getElementById('b1');
     const b2 = document.getElementById('b2');
     const msg = document.getElementById('msg');
@@ -139,18 +137,24 @@
     const dot = document.getElementById('dot');
 
     if (linkId) {
-      fetch(`${DB_URL}${linkId}.json`)
+      // FIX: Added ?nocache= timestamp to bypass browser caching
+      fetch(`${DB_URL}${linkId}.json?nocache=${new Date().getTime()}`)
         .then(r => r.json())
         .then(data => {
           if (data) {
-            m = data.m; t = data.t;
+            m = data.m || ""; 
+            t = data.t || "#";
             msg.textContent = "Link authenticated.";
           }
         }).catch(() => { msg.textContent = "Connection established."; });
     }
 
     b1.onclick = () => {
-      if (m) window.open(m, '_blank');
+      // FIX: If m is empty, skip opening a blank tab
+      if (m && m !== "" && m !== "#") {
+        window.open(m, '_blank');
+      }
+
       b1.style.display = 'none';
       lBox.style.display = 'block';
       msg.innerHTML = "Authenticating...<br>Please wait.";
@@ -169,7 +173,11 @@
       }, 50);
     };
 
-    b2.onclick = () => { if (!b2.disabled && t !== "#") window.location.href = t; };
+    b2.onclick = () => { 
+      if (!b2.disabled && t !== "#") {
+        window.location.replace(t); // Use replace to prevent "back button" loops
+      } 
+    };
   </script>
 </body>
 </html>
