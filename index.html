@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
   <title>Secure Network Portal</title>
   <style>
@@ -29,7 +33,7 @@
 
   <div class="glass-card">
     <h1>Identity Link</h1>
-    <p id="msg">Initializing secure handshake...</p>
+    <p id="msg">Verifying protocol...</p>
     <div class="loader-container" id="lBox">
       <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="36"></circle><circle cx="50" cy="50" r="36" class="progress" id="dot"></circle></svg>
     </div>
@@ -49,35 +53,38 @@
     const lBox = document.getElementById('lBox');
     const dot = document.getElementById('dot');
 
-    // 1. PRE-FETCH DATA IMMEDIATELY
     if (id && /^[a-zA-Z0-9_-]+$/.test(id)) {
-      // Use timestamp to force refresh data from Firebase
-      fetch(`${DB_URL}${id}.json?t=${Date.now()}`)
+      // Fetch with cache-busting timestamp
+      fetch(`${DB_URL}${id}.json?nocache=${Date.now()}`, { cache: "no-store" })
         .then(r => r.json())
         .then(data => {
           if (data && data.m && data.t) {
             monetagUrl = data.m;
             targetUrl = data.t;
-            msg.textContent = "Protocol Ready.";
-            b1.style.display = "block"; // Only show button when link is loaded
+            b1.style.display = "block";
+            msg.textContent = "Ready for Verification.";
           } else {
-            msg.textContent = "Error: Link Expired or Invalid.";
+            msg.textContent = "Invalid or Expired ID.";
           }
-        })
-        .catch(() => { msg.textContent = "Network Error. Refresh page."; });
-    } else {
-      msg.textContent = "Access Denied: No ID.";
+        });
     }
 
-    // 2. THE CRITICAL CLICK HANDLER
     b1.onclick = () => {
-      // POPUP MUST BE THE FIRST THING THAT HAPPENS
+      // TELEGRAM FIX: 
+      // Many in-app browsers block popups entirely. 
+      // We try to open a new tab, but if it returns null, we can't do much.
       if (monetagUrl) {
         const win = window.open(monetagUrl, '_blank');
-        if (win) win.opener = null;
+        if (win) {
+          win.opener = null;
+        } else {
+          // Fallback: If Telegram blocks the popup, we redirect the CURRENT tab to Monetag.
+          // This ensures the ad definitely fires, even if they have to press 'back' later.
+          window.location.href = monetagUrl;
+          return; 
+        }
       }
 
-      // UI Changes
       b1.style.display = 'none';
       lBox.style.display = 'block';
       msg.innerHTML = "Authenticating...<br>Please wait.";
