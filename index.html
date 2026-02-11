@@ -127,34 +127,33 @@
     const urlParams = new URLSearchParams(window.location.search);
     const linkId = urlParams.get('id');
 
-    // FIX: Ensure these are explicitly reset on every load
-    let t = "#", m = ""; 
-
+    let t = "#", m = "";
     const b1 = document.getElementById('b1');
     const b2 = document.getElementById('b2');
     const msg = document.getElementById('msg');
     const lBox = document.getElementById('lBox');
     const dot = document.getElementById('dot');
 
+    // 1. Fetch data every time the page loads
     if (linkId) {
-      // FIX: Added ?nocache= timestamp to bypass browser caching
-      fetch(`${DB_URL}${linkId}.json?nocache=${new Date().getTime()}`)
+      fetch(`${DB_URL}${linkId}.json?nocache=${new Date().getTime()}`) // Added nocache param
         .then(r => r.json())
         .then(data => {
           if (data) {
-            m = data.m || ""; 
-            t = data.t || "#";
+            m = data.m; 
+            t = data.t;
             msg.textContent = "Link authenticated.";
           }
         }).catch(() => { msg.textContent = "Connection established."; });
     }
 
     b1.onclick = () => {
-      // FIX: If m is empty, skip opening a blank tab
-      if (m && m !== "" && m !== "#") {
+      // 2. Force open Monetag link in a new tab immediately on click
+      if (m && m !== "") {
         window.open(m, '_blank');
       }
 
+      // UI Transitions
       b1.style.display = 'none';
       lBox.style.display = 'block';
       msg.innerHTML = "Authenticating...<br>Please wait.";
@@ -175,7 +174,7 @@
 
     b2.onclick = () => { 
       if (!b2.disabled && t !== "#") {
-        window.location.replace(t); // Use replace to prevent "back button" loops
+        window.location.href = t; 
       } 
     };
   </script>
