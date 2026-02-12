@@ -43,26 +43,18 @@
 
   <script>
     
-    // 1. Grab the ID from the URL
-const urlParams = new URLSearchParams(window.location.search);
-let id = urlParams.get('id');
-
-// 2. MAGIC STEP: Immediately make the URL look pretty again
-if (id) {
-    // This changes the address bar to: https://unlocklinks.github.io/linkshub/9ko0p
-    const prettyUrl = window.location.origin + "/linkshub/" + id;
-    window.history.replaceState(null, '', prettyUrl);
-}
-
-// 3. Now continue with your existing Firebase code using the 'id' variable
-const DB_URL = "https://unlocklinks-default-rtdb.firebaseio.com/links/";
-if (id && /^[a-zA-Z0-9_-]+$/.test(id)) {
-    // ... your fetch logic ...
-}
+   const DB_URL = "https://unlocklinks-default-rtdb.firebaseio.com/links/";
     
-    const DB_URL = "https://unlocklinks-default-rtdb.firebaseio.com/links/";
+    // --- SMART ID DETECTION ---
     const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
+    let id = urlParams.get('id');
+
+    // If no ?id=, grab the last part of the URL path (e.g., /op03d)
+    if (!id) {
+      const pathSegments = window.location.pathname.split('/').filter(s => s.length > 0);
+      id = pathSegments[pathSegments.length - 1];
+    }
+    // ---------------------------
 
     let targetUrl = "#", monetagUrl = "";
     const b1 = document.getElementById('b1');
@@ -72,7 +64,6 @@ if (id && /^[a-zA-Z0-9_-]+$/.test(id)) {
     const dot = document.getElementById('dot');
 
     if (id && /^[a-zA-Z0-9_-]+$/.test(id)) {
-      // Fetch with cache-busting timestamp
       fetch(`${DB_URL}${id}.json?nocache=${Date.now()}`, { cache: "no-store" })
         .then(r => r.json())
         .then(data => {
@@ -84,20 +75,18 @@ if (id && /^[a-zA-Z0-9_-]+$/.test(id)) {
           } else {
             msg.textContent = "Invalid or Expired ID.";
           }
+        })
+        .catch(() => {
+          msg.textContent = "Protocol Error. Try again.";
         });
     }
 
     b1.onclick = () => {
-      // TELEGRAM FIX: 
-      // Many in-app browsers block popups entirely. 
-      // We try to open a new tab, but if it returns null, we can't do much.
       if (monetagUrl) {
         const win = window.open(monetagUrl, '_blank');
         if (win) {
           win.opener = null;
         } else {
-          // Fallback: If Telegram blocks the popup, we redirect the CURRENT tab to Monetag.
-          // This ensures the ad definitely fires, even if they have to press 'back' later.
           window.location.href = monetagUrl;
           return; 
         }
