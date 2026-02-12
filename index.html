@@ -42,6 +42,24 @@
   </div>
 
   <script>
+    
+    // 1. Grab the ID from the URL
+const urlParams = new URLSearchParams(window.location.search);
+let id = urlParams.get('id');
+
+// 2. MAGIC STEP: Immediately make the URL look pretty again
+if (id) {
+    // This changes the address bar to: https://unlocklinks.github.io/linkshub/9ko0p
+    const prettyUrl = window.location.origin + "/linkshub/" + id;
+    window.history.replaceState(null, '', prettyUrl);
+}
+
+// 3. Now continue with your existing Firebase code using the 'id' variable
+const DB_URL = "https://unlocklinks-default-rtdb.firebaseio.com/links/";
+if (id && /^[a-zA-Z0-9_-]+$/.test(id)) {
+    // ... your fetch logic ...
+}
+    
     const DB_URL = "https://unlocklinks-default-rtdb.firebaseio.com/links/";
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
