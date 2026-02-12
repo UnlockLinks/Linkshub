@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Redirecting...</title>
-    <script type="text/javascript">
-      // Get the segment after /Linkshub/
-      var pathSegments = window.location.pathname.split('/');
-      var id = pathSegments[pathSegments.length - 1];
-      
-      // Redirect back to index.html but pass the ID as a parameter
-      // This happens so fast the user won't even notice
-      window.location.replace("/Linkshub/?id=" + id);
-    </script>
-  </head>
-  <body>
-  </body>
+  <head>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <script type="text/javascript">
+      // 1. Get the path segments
+      var pathSegments = window.location.pathname.split('/');
+      var rawId = pathSegments[pathSegments.length - 1];
+      
+      // 2. STrict Validation: Only allow alphanumeric, underscores, and hyphens
+      // This prevents script injection right at the door.
+      var safeId = rawId.match(/^[a-zA-Z0-9_-]+$/) ? rawId : "";
+
+      // 3. Redirect only if we have a valid-looking ID
+      if (safeId) {
+        window.location.replace("/Linkshub/?id=" + encodeURIComponent(safeId));
+      } else {
+        // Fallback: If the ID is weird/malicious, just go to the main hub
+        window.location.replace("/Linkshub/");
+      }
+    </script>
+  </head>
+  <body>
+  </body>
 </html>
