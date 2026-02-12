@@ -1,25 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <script type="text/javascript">
-        // 1. Get the path (e.g., /linkshub/9ko0p)
-        var path = window.location.pathname;
-        
-        // 2. Clean it: remove trailing slashes and split by '/'
-        var segments = path.replace(/\/$/, "").split('/').filter(Boolean);
-        
-        // 3. Get the last part (your ID)
-        var id = segments[segments.length - 1];
-
-        // 4. Redirect to your main index, but keep the ID in a way the index can read it
-        if (id && id !== 'linkshub') {
-            // We use a temporary search param that we will HIDE immediately in the next step
-            window.location.replace("/linkshub/?id=" + encodeURIComponent(id));
-        } else {
-            window.location.replace("/linkshub/");
-        }
-    </script>
+  <meta charset="utf-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <title>Secure Network Portal</title>
+  <style>
+    /* ... (CSS stays exactly the same) ... */
+    body { margin: 0; padding: 0; background-color: #010a1a; font-family: 'Inter', -apple-system, sans-serif; color: #ffffff; width: 100vw; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .ambient-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: #010a1a; }
+    .blob { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, #0045ff 0%, #00d2ff 30%, transparent 70%); filter: blur(80px); -webkit-filter: blur(80px); border-radius: 50%; opacity: 0.4; top: -10%; left: -10%; }
+    .blob-2 { position: absolute; width: 500px; height: 500px; background: radial-gradient(circle, #00d2ff 0%, transparent 70%); filter: blur(80px); -webkit-filter: blur(80px); border-radius: 50%; opacity: 0.3; bottom: -10%; right: -10%; }
+    .glass-card { position: relative; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 35px; padding: 40px 25px; text-align: center; width: 85%; max-width: 320px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); }
+    h1 { font-size: 1.7rem; font-weight: 800; margin: 0 0 10px; }
+    p { font-size: 14px; color: rgba(255, 255, 255, 0.6); margin-bottom: 30px; line-height: 1.5; }
+    .loader-container { position: relative; width: 80px; height: 80px; margin: 0 auto 30px; display: none; }
+    svg { transform: rotate(-90deg); width: 80px; height: 80px; }
+    circle { fill: none; stroke-width: 6; stroke: rgba(255, 255, 255, 0.1); }
+    .progress { stroke: #00d2ff; stroke-dasharray: 226; stroke-dashoffset: 226; transition: stroke-dashoffset 0.1s linear; }
+    .btn { width: 100%; padding: 18px; border-radius: 18px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; transition: 0.2s; }
+    #b1 { background: #ffffff; color: #000000; }
+    #b2 { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.1); cursor: not-allowed; }
+    #b2.active { background: #ffffff; color: #000000; cursor: pointer; border: none; }
+  </style>
 </head>
-<body></body>
+<body>
+
+  <div class="ambient-container"><div class="blob"></div><div class="blob-2"></div></div>
+
+  <div class="glass-card">
+    <h1>Identity Link</h1>
+    <p id="msg">Verifying protocol...</p>
+    <div class="loader-container" id="lBox">
+      <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="36"></circle><circle cx="50" cy="50" r="36" class="progress" id="dot"></circle></svg>
+    </div>
+    <button id="b1" class="btn" style="display:none;">Start Verify</button>
+    <button id="b2" class="btn" disabled>Continue</button>
+  </div>
+
+  <script>
+    
+   const DB_URL = "https://unlocklinks-default-rtdb.firebaseio.com/links/";
+    
+    // --- SMART ID DETECTION ---
+    const urlParams = new URLSearchParams(window.location.search);
+    let id = urlParams.get('id');
+
+    // If no ?id=, grab the last part of the URL path (e.g., /op03d)
+    if (!id) {
+      const pathSegments = window.location.pathname.split('/').filter(s => s.length > 0);
+      id = pathSegments[pathSegments.length - 1];
+    }
+    // ---------------------------
+
+    let targetUrl = "#", monetagUrl = "";
+    const b1 = document.getElementById('b1');
+    const b2 = document.getElementById('b2');
+    const msg = document.getElementById('msg');
+    const lBox = document.getElementById('lBox');
+    const dot = document.getElementById('dot');
+
+    if (id && /^[a-zA-Z0-9_-]+$/.test(id)) {
+      fetch(`${DB_URL}${id}.json?nocache=${Date.now()}`, { cache: "no-store" })
+        .then(r => r.json())
+        .then(data => {
+          if (data && data.m && data.t) {
+            monetagUrl = data.m;
+            targetUrl = data.t;
+            b1.style.display = "block";
+            msg.textContent = "Ready for Verification.";
+          } else {
+            msg.textContent = "Invalid or Expired ID.";
+          }
+        })
+        .catch(() => {
+          msg.textContent = "Protocol Error. Try again.";
+        });
+    }
+
+    b1.onclick = () => {
+      if (monetagUrl) {
+        const win = window.open(monetagUrl, '_blank');
+        if (win) {
+          win.opener = null;
+        } else {
+          window.location.href = monetagUrl;
+          return; 
+        }
+      }
+
+      b1.style.display = 'none';
+      lBox.style.display = 'block';
+      msg.innerHTML = "Authenticating...<br>Please wait.";
+
+      let time = 0, limit = 3000, dash = 226;
+      const timer = setInterval(() => {
+        time += 50;
+        dot.style.strokeDashoffset = dash - (time / limit) * dash;
+        if (time >= limit) {
+          clearInterval(timer);
+          lBox.style.display = 'none';
+          b2.disabled = false;
+          b2.classList.add('active');
+          msg.textContent = "Verification Successful ✅";
+        }
+      }, 50);
+    };
+
+    b2.onclick = () => { 
+      if (!b2.disabled && targetUrl !== "#") {
+        window.location.href = targetUrl; 
+      } 
+    };
+  </script>
+</body>
 </html>
