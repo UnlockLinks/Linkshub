@@ -1,26 +1,25 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
-    <title>Redirecting...</title>
     <script type="text/javascript">
-      // 1. Get the path segments
-      var pathSegments = window.location.pathname.split('/');
-      var rawId = pathSegments[pathSegments.length - 1];
-      
-      // 2. STrict Validation: Only allow alphanumeric, underscores, and hyphens
-      // This prevents script injection right at the door.
-      var safeId = rawId.match(/^[a-zA-Z0-9_-]+$/) ? rawId : "";
+        // 1. Get the path (e.g., /linkshub/9ko0p)
+        var path = window.location.pathname;
+        
+        // 2. Clean it: remove trailing slashes and split by '/'
+        var segments = path.replace(/\/$/, "").split('/').filter(Boolean);
+        
+        // 3. Get the last part (your ID)
+        var id = segments[segments.length - 1];
 
-      // 3. Redirect only if we have a valid-looking ID
-      if (safeId) {
-        window.location.replace("/Linkshub/?id=" + encodeURIComponent(safeId));
-      } else {
-        // Fallback: If the ID is weird/malicious, just go to the main hub
-        window.location.replace("/Linkshub/");
-      }
+        // 4. Redirect to your main index, but keep the ID in a way the index can read it
+        if (id && id !== 'linkshub') {
+            // We use a temporary search param that we will HIDE immediately in the next step
+            window.location.replace("/linkshub/?id=" + encodeURIComponent(id));
+        } else {
+            window.location.replace("/linkshub/");
+        }
     </script>
-  </head>
-  <body>
-  </body>
+</head>
+<body></body>
 </html>
