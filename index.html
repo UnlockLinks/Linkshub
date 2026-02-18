@@ -6,15 +6,15 @@
     <title>Linxhub | Secure Content Gateway</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-       .card { background-color: #1e293b; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); text-align: center; width: 100%; max-width: 400px; border: 1px solid #334155; }
+        .card { background-color: #1e293b; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); text-align: center; width: 100%; max-width: 400px; border: 1px solid #334155; }
         h1 { font-size: 1.5rem; margin-bottom: 1rem; color: #38bdf8; }
         p { color: #94a3b8; font-size: 0.95rem; line-height: 1.5; margin-bottom: 2rem; }
-       .btn { display: block; width: 100%; padding: 0.8rem; border-radius: 0.5rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.2s; border: none; font-size: 1rem; margin-top: 1rem; }
-       .btn-primary { background-color: #0284c7; color: #ffffff; }
-       .btn-primary:hover { background-color: #0369a1; }
-       .btn-success { background-color: #16a34a; color: #ffffff; }
-       .btn-success:hover { background-color: #15803d; }
-       .hidden { display: none; }
+        .btn { display: block; width: 100%; padding: 0.8rem; border-radius: 0.5rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.2s; border: none; font-size: 1rem; margin-top: 1rem; }
+        .btn-primary { background-color: #0284c7; color: #ffffff; }
+        .btn-primary:hover { background-color: #0369a1; }
+        .btn-success { background-color: #16a34a; color: #ffffff; }
+        .btn-success:hover { background-color: #15803d; }
+        .hidden { display: none; }
         #loader { margin: 20px auto; width: 40px; height: 40px; border: 4px solid #334155; border-top: 4px solid #38bdf8; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -26,25 +26,39 @@
         
         <div id="loader" class="hidden"></div>
 
-        <button id="btn1" class="btn btn-primary" onclick="startStep1()">Verify Step 1</button>
+        <button id="btn1" class="btn btn-primary hidden" onclick="startStep1()">Verify Step 1</button>
         <button id="btn2" class="btn btn-primary hidden" onclick="startStep2()">Verify Step 2</button>
         <a id="btnFinal" class="btn btn-success hidden" href="">Get Final Link</a>
     </div>
 
     <script>
         const FIREBASE_ROOT = "https://getlinx-a2z-default-rtdb.firebaseio.com";
-        const urlParams = new URLSearchParams(window.location.search);
-        const linkId = urlParams.get('id') || window.location.pathname.split('/').pop();
+        
+        // --- CLEAN URL LOGIC ---
+        // Splits the URL path and gets the last part (the ID)
+        const pathSegments = window.location.pathname.split('/').filter(s => s.length > 0);
+        const linkId = pathSegments[pathSegments.length - 1];
+        
         let payload = null;
 
         async function loadData() {
-            if (!linkId || linkId.length < 5) return;
+            // Check if ID exists and isn't just the repo name "Linxhub"
+            if (!linkId || linkId.toLowerCase() === "linxhub") {
+                document.getElementById('status').innerText = "Please use a valid content link.";
+                return;
+            }
+
             try {
                 const response = await fetch(`${FIREBASE_ROOT}/links/${linkId}.json`);
                 payload = await response.json();
-                if (!payload) document.getElementById('status').innerText = "Link expired or invalid.";
+                
+                if (payload) {
+                    document.getElementById('btn1').classList.remove('hidden');
+                } else {
+                    document.getElementById('status').innerText = "Link expired or invalid.";
+                }
             } catch (e) {
-                document.getElementById('status').innerText = "Connection error.";
+                document.getElementById('status').innerText = "Connection error. Please refresh.";
             }
         }
 
@@ -74,6 +88,7 @@
             }, 3000);
         }
 
+        // Initialize
         loadData();
     </script>
 </body>
